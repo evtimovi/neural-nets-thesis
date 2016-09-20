@@ -19,14 +19,11 @@ def max_pool_2x2(x):
 
 if __name__ == "__main__":
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
-    print "loaded MNIST data"
 
     sess = tf.InteractiveSession()
-    print "initialized interactive session"
 
     x = tf.placeholder(tf.float32, shape=[None,784])
     y_ = tf.placeholder(tf.float32, shape=[None,10])
-    print "Initialized placeholders"
 
     # the argument is the shape: a 5 dimensional "matrix"
     # 5 by 5 is the patch size
@@ -46,14 +43,12 @@ if __name__ == "__main__":
     
     # pool
     h_pool1 = max_pool_2x2(h_conv1)
-    print "Added first layer to graph"
 
     # second convolutional layer
     W_conv2 = weight_variable([5,5,32,64])
     b_conv2 = bias_variable([64])
     h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
     h_pool2 = max_pool_2x2(h_conv2)
-    print "Added second layer to comp graph"
 
     # densely connected layer
     # image is now 7x7
@@ -62,7 +57,6 @@ if __name__ == "__main__":
     b_fc1 = bias_variable([1024])
     h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
-    print "Added densely connected layer to comp graph"
 
     # dropout
     keep_prob = tf.placeholder(tf.float32)
@@ -72,35 +66,20 @@ if __name__ == "__main__":
     W_fc2 = weight_variable([1024,10])
     b_fc2 = bias_variable([10])
     y_conv = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
-    print "Added softmaxe to comp graph"
 
     # train and evaluate
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv), reduction_indices=[1]))
-    print "cross-entropy"
-
     train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-    print "train_step"
-
     correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
-    print "correct_prediction"
-
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print "accuracy"
-
     sess.run(tf.initialize_all_variables())
-    print "sess.run"
 
     for i in range(20000):
-#        print "batch %d"%i
-
         batch = mnist.train.next_batch(50)
-#        print "mnist next batch"
 
-#        if i%100 == 0:
-#            print "train accuracy begin"
-#            train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
-#            print("step %d, training accuracy %g"%(i, train_accuracy))
+        if i%100 == 0:
+            train_accuracy = accuracy.eval(feed_dict={x:batch[0], y_: batch[1], keep_prob: 1.0})
+            print("step %d, training accuracy %g"%(i, train_accuracy))
 
-        print "batch %d, train step beginning"%i
         train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-    print("test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.lables, keep_prob:1.0}))
+    print("test accuracy %g"%accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob:1.0}))
