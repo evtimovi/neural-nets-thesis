@@ -13,6 +13,8 @@ def conv2d(x, W):
     return tf.nn.conv2d(x, W, strides=[1,1,1,1], padding='SAME')
 
 def max_pool_2x2(x):
+    # ksize is the size of input for each dimension
+    # the windows are separated by offset strides
     return tf.nn.max_pool(x, ksize=[1,2,2,1],
                              strides=[1,2,2,1],
                              padding='SAME')
@@ -25,16 +27,25 @@ if __name__ == "__main__":
     x = tf.placeholder(tf.float32, shape=[None,784])
     y_ = tf.placeholder(tf.float32, shape=[None,10])
 
-    # the argument is the shape: a 5 dimensional "matrix"
+    # the argument is the shape: a 4 dimensional "matrix"
     # 5 by 5 is the patch size
     # 1 is the number of input channels 
     # 32 is the number of output channels
+    # 32 features detected that will be searched across each 5x5 patch
+    # in other words, we have 32 outputs for each 5x5 matrix 
+    # with entries that are just a single number
+    # (the 5x5 patch will be slid across the input image and
+    # regardless of where it is in the image, it must have 
+    # the same weights for the current feature filter -- 
+    # we will have 32 feature filters)
+    # the size is width, height, input channels, num_of_filters (output channels)
     W_conv1 = weight_variable([5,5,1,32])
     b_conv1 = bias_variable([32])
 
     # reshape x to a 4 dimensional tensor
     # 28 by 28 is the image width and height
     # 1 is the number of color channels
+    # siz ie num_of_images, width, height, channels
     x_image = tf.reshape(x,[-1,28,28,1])
 
     # first convolutional layer
