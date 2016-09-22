@@ -90,3 +90,6 @@ ENV/
 
 #don't want the vgg data committed
 measure-accuracy/vggface
+
+#don't commit datasets
+datasets/
