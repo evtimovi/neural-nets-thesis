@@ -89,7 +89,14 @@ ENV/
 .ropeproject
 
 #don't want the vgg data committed
-measure-accuracy/vggface
+# measure-accuracy/vggface
 
 #don't commit datasets
 datasets/
+
+# tensorflow-related
+*.h5
+*.ckpt
+
+# previous work
+*_wassim.py
