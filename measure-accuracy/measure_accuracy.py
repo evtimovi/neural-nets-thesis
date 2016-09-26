@@ -22,22 +22,35 @@ This generates a distribution of Euclidean distances which is then used to compu
 # importat note: numpy and cv2 must be imported before tensorflow because of a bug in tensorflow header loading
 # this bug has been fixed, see here: https://github.com/tensorflow/tensorflow/issues/1924
 import numpy as np
+import cv2
 from scipy.spatial.distance import euclidean 
 from sklearn.metrics import roc_auc_score
-import cv2
 import sys
 import os
 import vggface
 import tensorflow as tf
 
+# a boolean flag about printouts during setup of the network
+global debug
+
 def load_image(path):
     '''
     The following method will load a single image and convert it to grayscale
     '''
-    img = cv2.imread('/home/evtimovi/neural-nets-thesis/datasets/lfw/Al_Gore/Al_Gore_0001.jpg')
+
+#    if debug == True:
+#        print '********** loading path', path 
+
+    img = cv2.imread(path)
+
+    if img is None:
+        raise Exception("Image at path " + path + " not found. Check path or numpy, cv2, tensorflow import order.")
+
     img2 = img.astype(np.float32)
+
     #subtract the average so that all pixels are close to the average
     img2 -= [129.1863,104.7624,93.5940]
+
     # have to resize it here to comply with VGGFace specs
     img2 = cv2.resize(img2, (224, 224))
     img2 = np.array([img2,])  
@@ -47,6 +60,9 @@ def load_image(path):
 def get_vector(path, network):
     # load faces
     img1 = load_image(path)
+    
+#    if debug == True:
+#        print "*********** image at", path, "being fed into the network"
 
     # extract features
     output1 = network.eval(feed_dict={x_image:img1})[0]
@@ -63,11 +79,15 @@ def get_paths_from_args():
     # position 0 is the file name
     # position 1: dataset path relative to datasets/
     # position 2: test file path relative to datasets/ 
-    if len(sys.argv) != 3:
+    if len(sys.argv) < 3:
         print "Two command line arguments expected: dataset and test file."
         print "Found {0}".format(len(sys.argv)-1)
         print "Exiting..."
         sys.exit(1)
+
+    debug = False
+    if len(sys.argv) == 4 and sys.argv[3] == 'debug':
+        debug = True
 
     DATASETS_BASE = '../datasets/'
 
@@ -99,6 +119,8 @@ def setup_network():
 
 if __name__ == "__main__":
     
+    debug = True
+
     (path_data, path_test) = get_paths_from_args()
     names_with_locations = parse_test_file(path_test)
     
@@ -123,9 +145,19 @@ if __name__ == "__main__":
 
     # go through each pair, get output vector and compute euclidean dist
     for (lhs, rhs) in names_with_locations:
-        v1 = get_vector(path_data + lhs, network)
-        v2 = get_vector(path_data + rhs, network)
+        v1 = get_vector(path_data + '/' + lhs, network)
+        v2 = get_vector(path_data + '/' + rhs, network)
+
+ #       if debug == True:
+ #           print 'Comparing', lhs, 'and', rhs
+ #           print 'vector 1', v1, 'length', len(v1)
+ #           print 'vector 2', v2, 'length', len(v2)
+
         dist = euclidean(v1, v2)
+
+#        if debug == True:
+#            print 'Their distance is', dist
+
         dist_distribution.append(dist)
 
     # we will assume by specification that the first 500 pairs are the same person
@@ -134,4 +166,5 @@ if __name__ == "__main__":
     true = [1 for i in xrange(500)]
     true.extend([0 for i in xrange(500)])
 
+ #   print 'The Euclidean distance array is', dist_distribution
     print 'The ROC AUC score is', roc_auc_score(true, dist_distribution)

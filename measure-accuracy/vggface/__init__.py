@@ -55,14 +55,18 @@ class VGGFace(object):
         # (34): nn.ReLU
         # (35): nn.Dropout(0.500000)
         # (36): nn.Linear(4096 -> 4096)
-        self.layers.append(('linear','36',4096,True))
+        #self.layers.append(('linear','36',4096,True))
+        self.layers.append(('l2','37',4096,True))
+        
         # (37): nn.ReLU
         # (38): nn.Dropout(0.500000)
         # (39): nn.Linear(4096 -> 2622)
-        self.layers.append(('linear','39',2622,False))
+        # self.layers.append(('linear','39',2622,False))
         # (40): nn.SoftMax
-        self.layers.append(('softmax'))
+        # self.layers.append(('softmax'))
 
+    # counts how many variables start with the same prefix
+    # and then gives a string that's in the form prefix_number
     def get_unique_name_(self, prefix):
         id = sum(t.startswith(prefix) for t,_,_ in self.vars)+1
         return '%s_%d'%(prefix, id)
@@ -116,6 +120,8 @@ class VGGFace(object):
                     self.add_(name, fc,layer)
             elif layer[0] == 'softmax':
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
+            elif layer[0] == 'l2':
+                self.add_(name,tf.nn.l2_normalize(self.get_output(),0,),layer)
 
     def load(self, ses, input_img, path = os.path.join(os.path.dirname(os.path.realpath("__file__")), 'vggface/network.h5')):
         self.params = h5py.File(path,'r')
@@ -155,4 +161,12 @@ class VGGFace(object):
                         # print name,filters.shape
 
     def eval(self,*args,**kwargs):
-        return self.get_output().eval(*args,**kwargs)
+        return  self.get_output().eval(*args,**kwargs)
+
+def load_image(path):
+    img = cv2.imread(path)
+    img = cv2.resize(img, (224, 224))
+    img = img.astype(np.float32)
+    img -= [129.1863,104.7624,93.5940]
+    img = np.array([img,])
+    return img

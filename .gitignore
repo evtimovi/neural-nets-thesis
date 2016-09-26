@@ -99,4 +99,4 @@ datasets/
 *.ckpt
 
 # previous work
-*_wassim.py
+*__ignore
