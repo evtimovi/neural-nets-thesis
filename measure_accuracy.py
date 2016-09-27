@@ -30,17 +30,10 @@ import os
 import vggface
 import tensorflow as tf
 
-# a boolean flag about printouts during setup of the network
-global debug
-
 def load_image(path):
     '''
-    The following method will load a single image and convert it to grayscale
+    loads a single image, normalizes it and returns it as a NumPy array 
     '''
-
-#    if debug == True:
-#        print '********** loading path', path 
-
     img = cv2.imread(path)
 
     if img is None:
@@ -58,21 +51,25 @@ def load_image(path):
 
 
 def get_vector(path, network):
-    # load faces
+    '''
+    feeds an image to be found at path to the network in network
+    (which must have been initialized as VGGFace).
+    The output is the feature vector (L2 vector) produced by VGGFace
+    '''
+    # load face
     img1 = load_image(path)
     
-#    if debug == True:
-#        print "*********** image at", path, "being fed into the network"
-
     # extract features
     output1 = network.eval(feed_dict={x_image:img1})[0]
-
+    
+    # normalize
     norm_output1 = output1/np.linalg.norm(output1,2)
+
     return norm_output1
 
 def get_paths_from_args():
     '''
-    This method parses the command-line arguments and returns a tuple
+    parses the command-line arguments and returns a tuple
     of the form (path_to_single_image, path_to_test_file)
     '''
     # command line arguments expected will be:
@@ -85,11 +82,7 @@ def get_paths_from_args():
         print "Exiting..."
         sys.exit(1)
 
-    debug = False
-    if len(sys.argv) == 4 and sys.argv[3] == 'debug':
-        debug = True
-
-    DATASETS_BASE = '../datasets/'
+    DATASETS_BASE = './datasets/'
 
     # convert to absolute path for current operating system and location
     path_to_data = os.path.realpath(DATASETS_BASE + sys.argv[1])
@@ -99,7 +92,7 @@ def get_paths_from_args():
 
 def parse_test_file(path):
     '''
-    This method parses the input test file
+    parses the input test file
     The format of the file is expected to contain lines of pairs of image names
     separated by one or more whitespaces
     It returns an array of the pairs
@@ -114,17 +107,12 @@ def parse_test_file(path):
             image_names.append(pair)
     return image_names
     
-def setup_network():
-        return network
 
 if __name__ == "__main__":
-    
-    debug = True
 
     (path_data, path_test) = get_paths_from_args()
     names_with_locations = parse_test_file(path_test)
     
-    # set up the neural network (cannot be its own method because tensorflow scope)
     # the shape of the placeholder is determined by the VGGFace specs
     # the image has to be resized to fit those
     x_image = tf.placeholder(tf.float32, shape=[1,224,224,3]) 
@@ -133,38 +121,23 @@ if __name__ == "__main__":
     # (VGGFace setup provided by external script)
     sess = tf.InteractiveSession()
     network = vggface.VGGFace()
-    network.load(sess, x_image); 
-
-    # restore the variables in initial.ckpt into this sess object
-    # this will essentially load the weights and biases
-    saver = tf.train.Saver()
-    saver.restore(sess, "./vggface/initial.ckpt")
+    network.load(sess, x_image) 
 
     # this array will hold the distribution of distances for each of the 1000 pairs
     dist_distribution = []
 
     # go through each pair, get output vector and compute euclidean dist
+    # then add that distance to the dist_distribution
     for (lhs, rhs) in names_with_locations:
         v1 = get_vector(path_data + '/' + lhs, network)
         v2 = get_vector(path_data + '/' + rhs, network)
-
- #       if debug == True:
- #           print 'Comparing', lhs, 'and', rhs
- #           print 'vector 1', v1, 'length', len(v1)
- #           print 'vector 2', v2, 'length', len(v2)
-
         dist = euclidean(v1, v2)
-
-#        if debug == True:
-#            print 'Their distance is', dist
-
         dist_distribution.append(dist)
 
     # we will assume by specification that the first 500 pairs are the same person
     # and the second 500 are different people (i.e. we fed the network the faces of two different people)
-    # that's our ground truth
-    true = [1 for i in xrange(500)]
-    true.extend([0 for i in xrange(500)])
-
- #   print 'The Euclidean distance array is', dist_distribution
+    # that's our ground truth: 0 Euclidean dist between the vectors of the same people, 1 for different
+    true = [0 for i in xrange(500)]
+    true.extend([1 for i in xrange(500)])
+    
     print 'The ROC AUC score is', roc_auc_score(true, dist_distribution)

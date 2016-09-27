@@ -4,8 +4,6 @@ import numpy as np
 import cv2
 import os
 
-
-
 class VGGFace(object):
 
     def __init__(self,):
@@ -122,51 +120,15 @@ class VGGFace(object):
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
             elif layer[0] == 'l2':
                 self.add_(name,tf.nn.l2_normalize(self.get_output(),0,),layer)
-
-    def load(self, ses, input_img, path = os.path.join(os.path.dirname(os.path.realpath("__file__")), 'vggface/network.h5')):
-        self.params = h5py.File(path,'r')
-        self.vars.append(('input',input_img,['input',None]))
+    
+    def load(self, sess, input_img):
+        self.vars.append(('input', input_img, ['input', None]))
         self.setup()
-        for name,varb,layer in self.vars:
-            if layer[0] == 'conv':
-                with tf.variable_scope(name, reuse=True):
-                    h, w, c_i, c_o = layer[2],layer[3],layer[4],layer[5]
-                    filters = np.array([k.reshape(c_i,h,w) for k in self.params[layer[1]]]).transpose((2, 3, 1, 0))
-                    ses.run(tf.get_variable('weights').assign(filters))
-                    ses.run(tf.get_variable('biases').assign(np.array(self.params[layer[1]+'b'])))
-                    # print name,filters.shape
-            if layer[0] == 'linear':
-                if layer[1] == '33':
-                    with tf.variable_scope(name, reuse=True):
-                        filters = np.array([k for k in self.params[layer[1]]])
-                        prev_c_o = 512
-                        # print 'initial',filters.shape
-                        cur_c_i, cur_c_o = 25088,4096
-                        dim = np.sqrt(cur_c_i/prev_c_o)
-                        filters = filters.reshape((cur_c_o,prev_c_o, dim, dim))
-                        # print 'reshaped',filters.shape
-                        filters = filters.transpose((2, 3, 1, 0))
-                        # print 'transposed',filters.shape
-                        filters = filters.reshape((prev_c_o*dim*dim, cur_c_o))
-                        # print 'reshpaed',filters.shape
-                        ses.run(tf.get_variable('weights').assign(filters))
-                        ses.run(tf.get_variable('biases').assign(np.array(self.params[layer[1]+'b'])))
-                        # print name,filters.shape
-                else:
-                    with tf.variable_scope(name, reuse=True):
-                        filters = np.array([k for k in self.params[layer[1]]])
-                        filters = filters.transpose((1, 0))
-                        ses.run(tf.get_variable('weights').assign(filters))
-                        ses.run(tf.get_variable('biases').assign(np.array(self.params[layer[1]+'b'])))
-                        # print name,filters.shape
+
+        # restore the variables in initial.ckpt into this sess object
+        # this will essentially load the weights and biases
+        saver = tf.train.Saver()
+        saver.restore(sess, "./vggface/initial.ckpt")
 
     def eval(self,*args,**kwargs):
         return  self.get_output().eval(*args,**kwargs)
-
-def load_image(path):
-    img = cv2.imread(path)
-    img = cv2.resize(img, (224, 224))
-    img = img.astype(np.float32)
-    img -= [129.1863,104.7624,93.5940]
-    img = np.array([img,])
-    return img
