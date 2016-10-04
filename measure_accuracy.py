@@ -28,7 +28,6 @@ from sklearn.metrics import roc_auc_score
 import sys
 import os
 import vggface
-import tensorflow as tf
 
 def load_image(path):
     '''
@@ -49,23 +48,6 @@ def load_image(path):
     img2 = np.array([img2,])  
     return img2
 
-
-def get_vector(path, network):
-    '''
-    feeds an image to be found at path to the network in network
-    (which must have been initialized as VGGFace).
-    The output is the feature vector (L2 vector) produced by VGGFace
-    '''
-    # load face
-    img1 = load_image(path)
-    
-    # extract features
-    output1 = network.eval(feed_dict={x_image:img1})[0]
-    
-    # normalize
-    norm_output1 = output1/np.linalg.norm(output1,2)
-
-    return norm_output1
 
 def get_paths_from_args():
     '''
@@ -113,15 +95,10 @@ if __name__ == "__main__":
     (path_data, path_test) = get_paths_from_args()
     names_with_locations = parse_test_file(path_test)
     
-    # the shape of the placeholder is determined by the VGGFace specs
-    # the image has to be resized to fit those
-    x_image = tf.placeholder(tf.float32, shape=[1,224,224,3]) 
-
-    # initialize session and set up variables for VGGFace 
-    # (VGGFace setup provided by external script)
-    sess = tf.InteractiveSession()
+    # initialize the network and load weights from a file
+    # the VGGFace class takes care of sessions, etc and all the internal tensorflow stuff
     network = vggface.VGGFace()
-    network.load(sess, x_image) 
+    network.load_weights('./vggface/initial.ckpt')
 
     # this array will hold the distribution of distances for each of the 1000 pairs
     dist_distribution = []
@@ -129,8 +106,10 @@ if __name__ == "__main__":
     # go through each pair, get output vector and compute euclidean dist
     # then add that distance to the dist_distribution
     for (lhs, rhs) in names_with_locations:
-        v1 = get_vector(path_data + '/' + lhs, network)
-        v2 = get_vector(path_data + '/' + rhs, network)
+        img1 = load_image(path_data + '/' + lhs)
+        img2 = load_image(path_data + '/' + rhs) 
+        v1 = network.get_l2_vector(img1)
+        v2 = network.get_l2_vector(img2)
         dist = euclidean(v1, v2)
         dist_distribution.append(dist)
 
