@@ -27,7 +27,7 @@ from scipy.spatial.distance import euclidean
 from sklearn.metrics import roc_auc_score
 import sys
 import os
-import vggface
+from vggface import networks as vggn
 
 def load_image(path):
     '''
@@ -97,8 +97,10 @@ if __name__ == "__main__":
     
     # initialize the network and load weights from a file
     # the VGGFace class takes care of sessions, etc and all the internal tensorflow stuff
-    network = vggface.VGGFace()
-    network.load_weights('./vggface/initial.ckpt')
+#    network = vggface.VGGFace()
+    network = vggn.VGGFaceVanilla()
+    network.load_weights(os.path.realpath('./vggface/weights/initial.ckpt'))
+
 
     # this array will hold the distribution of distances for each of the 1000 pairs
     dist_distribution = []
