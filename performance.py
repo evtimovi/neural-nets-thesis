@@ -1,4 +1,5 @@
 import numpy as np
+import sklearn.metrics as skmet
 
 '''
 This module is designed to contain functions that measure
@@ -266,3 +267,50 @@ def equal_error_rate_from_distributions(genuine, imposter, step=0.01, tolerance=
             return fmr
 
     raise Exception("No fmr=fnmr found within tolerance of " + tolerance)
+
+def roc_ruve(ground_truth, similarities):
+    '''
+    Finds the roc curve that can be generated from these
+    ground truths and similarity measures.
+    Args:
+        ground_truth: an array of 0/1 values with 0 representing "same"
+                      and 1 representing "different". These are 
+                      the ground_truth values of the pairs at each index.
+                      The index of a pair here must be the same as the 
+                      index of the same pair in similarity.
+        similarity: an array of values between 0 and 1 with 0 representing "same"
+                    and 1 representing "different". These are the similarity
+                    measures obtained by the classifier (e.g. Euclidean
+                    distance between two feature vectors)
+                    The index of a pair here must be the same as the 
+                    index of the same pair in ground_truth.
+    Returns:
+        the ROC cuve in format (far_values, gar_values)
+    '''
+    x_values, y_values, thresholds = skmet.roc_curve(ground_truth, similarity)
+    return x_values, y_values
+
+def gar_at_zero_far(ground_truth, similarity)
+    '''
+    Computes the GAR at 0 FAR measure
+    (indicating true positive rate given no false positive rates)
+    given the scores in ground_truth and similarity.
+    If there is no FAR = 0, then the GAR at min FAR is returned.
+    Args:
+        ground_truth: an array of 0/1 values with 0 representing "same"
+                      and 1 representing "different". These are 
+                      the ground_truth values of the pairs at each index.
+                      The index of a pair here must be the same as the 
+                      index of the same pair in similarity.
+        similarity: an array of values between 0 and 1 with 0 representing "same"
+                    and 1 representing "different". These are the similarity
+                    measures obtained by the classifier (e.g. Euclidean
+                    distance between two feature vectors)
+                    The index of a pair here must be the same as the 
+                    index of the same pair in ground_truth.
+    Return:
+        the GAR at min FAR measure
+    '''
+    far_values, gar_values = roc_curve(ground_truth, similarity)
+    return gar_values[0]
+    
