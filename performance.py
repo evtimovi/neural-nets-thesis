@@ -194,38 +194,33 @@ def gar(ground_truth, similarity, threshold):
     tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
     return tp/(tp+fn)
 
-def equal_error_rate(ground_truth, similarity, step=0.01, tolerance=0.01):
+def equal_error_rate(ground_truth, similarity):
     '''
     Calculates the equal error rate by computing FMR and FNMR rates 
     for the similarity measures in similarity given ground_truth
-    by varying the threshold in steps of step.
-    "Equal" here is defined to mean within a difference of "threshold"
+    by varying the threshold over each individual similarity measure.
 
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are the similarity
+                    measures obtained by the classifier.
+                    Note that if using Euclidean distance, the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
- 
-        step: how to vary the threshold at each step (default: 0.01)
-        tolerance: defines maximum difference between two numbers
-                   for them to be termed "equal" (default: 0.01)
 
     Returns:
         the FMR when the threshold is such that FMR=FNMR (within threshold)
-
     '''
-    for t in range(0, np.amax(similarity), step):
+    for t in np.sort(similarity):
         fmr = fmr(ground_truth, similarity, t)
         fnmr = fnmr(ground_truth, similarity, t)
-        if (abs(fmr-fnmr) < tolerance):
+        if fmr = fnmr:
             return fmr
 
     raise Exception("No fmr=fnmr found within tolerance of " + tolerance)
