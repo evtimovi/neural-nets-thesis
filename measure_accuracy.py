@@ -21,10 +21,12 @@ This generates a distribution of Euclidean distances which is then used to compu
 '''
 # importat note: numpy and cv2 must be imported before tensorflow because of a bug in tensorflow header loading
 # this bug has been fixed, see here: https://github.com/tensorflow/tensorflow/issues/1924
+import performance as p
 import numpy as np
 import cv2
 from scipy.spatial.distance import euclidean 
-from sklearn.metrics import roc_auc_score
+#from sklearn.metrics import roc_auc_score
+#import sklearn.metrics as met
 import sys
 import os
 from vggface import networks as vggn
@@ -117,8 +119,13 @@ if __name__ == "__main__":
 
     # we will assume by specification that the first 500 pairs are the same person
     # and the second 500 are different people (i.e. we fed the network the faces of two different people)
-    # that's our ground truth: 0 Euclidean dist between the vectors of the same people, 1 for different
-    true = [0 for i in xrange(500)]
-    true.extend([1 for i in xrange(500)])
+    true = [1 for i in xrange(500)]
+    true.extend([0 for i in xrange(500)])
+
+    with open('vgg_vectors.txt', 'w') as f:
+        f.write('true=' + str(true) + '\n')
+        f.write('dist_distribution=' + str(dist_distribution) + '\n')
     
-    print 'The ROC AUC score is', roc_auc_score(true, dist_distribution)
+    # we flip the Euclidan distances 
+    roc_auc = p.roc_auc_score(true, map(lambda x: 1/x,dist_distribution))
+    print 'The ROC AUC score is', roc_auc 

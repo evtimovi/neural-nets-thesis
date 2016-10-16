@@ -86,7 +86,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
                   we classify those above the threshold as genuine
                   and those below as imposters (matching vs non-matching)
     Returns:
-        a 4-way tuple representing tp, fp, fn, tp
+        a 4-way tuple representing tn, fp, fn, tp
 
     '''
     # force both ground_truth and similarity into classes based on threshold
@@ -99,7 +99,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
-    return confusion_matrix(true, predicted).ravel()
+    return skmet.confusion_matrix(true, predicted).ravel()
  
 def fnmr(ground_truth, similarity, threshold):
     '''
@@ -130,7 +130,7 @@ def fnmr(ground_truth, similarity, threshold):
         a float indicating the FNMR rate
     '''
     tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
-    return fn/(tp+fn)
+    return float(fn)/(float(tp)+float(fn))
 
 def fmr(ground_truth, similarity, threshold):
     '''
@@ -161,7 +161,7 @@ def fmr(ground_truth, similarity, threshold):
         a float indicating the FMR rate
     '''
     tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
-    return fp/(tn+fp)
+    return float(fp)/(float(tn)+float(fp))
 
 def gar(ground_truth, similarity, threshold):
     '''
@@ -192,7 +192,7 @@ def gar(ground_truth, similarity, threshold):
         a float indicating the GAR rate
     '''
     tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
-    return tp/(tp+fn)
+    return float(tp)/(float(tp)+float(fn))
 
 def equal_error_rate(ground_truth, similarity):
     '''
@@ -201,15 +201,17 @@ def equal_error_rate(ground_truth, similarity):
     by varying the threshold over each individual similarity measure.
 
     Args:
-        ground_truth: an array of values with bigger values representing "more similar"
+        ground_truth: an array of values with 
+                      bigger values representing "more similar"
                       and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
         similarity: an array of values with bigger values representing "more similar"
-                    and smaller values representing "more different". These are the similarity
-                    measures obtained by the classifier.
-                    Note that if using Euclidean distance, the values should be flipped
+                    and smaller values representing "more different". These are 
+                    the similarity measures obtained by the classifier.
+                    Note that if using Euclidean distance, 
+                    the values should be flipped
                     (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
@@ -217,13 +219,23 @@ def equal_error_rate(ground_truth, similarity):
     Returns:
         the FMR when the threshold is such that FMR=FNMR (within threshold)
     '''
-    for t in np.sort(similarity):
-        fmr = fmr(ground_truth, similarity, t)
-        fnmr = fnmr(ground_truth, similarity, t)
-        if fmr = fnmr:
-            return fmr
-
-    raise Exception("No fmr=fnmr found within tolerance of " + tolerance)
+    # compute the fmr and fnmr taking each possible
+    # similarity measure as a threshold t
+    # sort the similarity measures along the way (might be redundant)
+    map_fmr = np.vectorize(lambda t: fmr(ground_truth, similarity, t))
+    map_fnmr = np.vectorize(lambda t: fnmr(ground_truth, similarity, t))
+    sim_sorted = np.sort(similarity)
+    fmrs = map_fmr(sim_sorted)
+    fnmrs = map_fnmr(sim_sorted)
+    
+    #print 'fmrs', fmrs
+    #print 'fnmrs', fnmrs
+    # find all differences between fnmr and fmr
+    # and return the minimum
+    map_diff = np.vectorize(lambda x,y: abs(x-y))
+    diffs = map_diff(fmrs,fnmrs)
+    #print diffs
+    return fmrs[list(diffs).index(np.amin(diffs))]
 
 def equal_error_rate_from_distributions(genuine, imposter, step=0.01, tolerance=0.01):
     '''
@@ -251,20 +263,23 @@ def equal_error_rate_from_distributions(genuine, imposter, step=0.01, tolerance=
 
     raise Exception("No fmr=fnmr found within tolerance of " + tolerance)
 
-def roc_ruve(ground_truth, similarities):
+def roc_curve(ground_truth, similarity):
     '''
     Finds the roc curve that can be generated from these
     ground truths and similarity measures.
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with 
+                      bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are 
+                    the similarity measures obtained by the classifier.
+                    Note that if using Euclidean distance, 
+                    the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
     Returns:
@@ -273,27 +288,56 @@ def roc_ruve(ground_truth, similarities):
     x_values, y_values, thresholds = skmet.roc_curve(ground_truth, similarity)
     return x_values, y_values
 
-def gar_at_zero_far(ground_truth, similarity)
+def roc_auc_score(ground_truth, similarities):
+    '''
+    Finds the AUC score from the ROC curve that can be generated from these
+    ground truths and similarity measures.
+    Args:
+        ground_truth: an array of values with 
+                      bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
+                      the ground_truth values of the pairs at each index.
+                      The index of a pair here must be the same as the 
+                      index of the same pair in similarity.
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are 
+                    the similarity measures obtained by the classifier.
+                    Note that if using Euclidean distance, 
+                    the values should be flipped
+                    (because the convention of similar/different is reversed).
+                    The index of a pair here must be the same as the 
+                    index of the same pair in ground_truth.
+    Returns:
+        the ROC AUC score
+    '''
+    return skmet.roc_auc_score(ground_truth, similarities)
+
+def gar_at_zero_far(ground_truth, similarity):
     '''
     Computes the GAR at 0 FAR measure
     (indicating true positive rate given no false positive rates)
     given the scores in ground_truth and similarity.
     If there is no FAR = 0, then the GAR at min FAR is returned.
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with bigger values 
+                      representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values 
+                    representing "more similar"
+                    and smaller values representing "more different". These are 
+                    the similarity measures obtained by the classifier.
+                    Note that if using Euclidean distance, 
+                    the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
-    Return:
+
+
+   Return:
         the GAR at min FAR measure
     '''
     far_values, gar_values = roc_curve(ground_truth, similarity)
     return gar_values[0]
-    
