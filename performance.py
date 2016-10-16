@@ -63,150 +63,138 @@ def distribution(values, density=False, each_unique_in_bucket=False):
         y_values, x_borders = np.histogram(values, bins='auto', density=density)
         return x_borders, y_values
 
-def fnmr_from_distributions(genuine, imposter, threshold):
+def binary_confusion_matrix(ground_truth, similarity, threshold):
     '''
-    Calculates the False Non-match Rate (False Reject Rate)
-    from the given genuine and imposter distributions at the
-    given threshold.
-    The computation is based on Area-Under-the-Curve (AUC) ratios.
-
+    Uses the threshold when applied to similarity to construct
+    a confusion "matrix" for binary classes.
+    Those above the threshold are considered matching,
+    those below are considered non-matching.
     Args:
-        genuine: the genuine distribution in (x_values, y_values) tuple format
-        imposter: the imposter distribution in (x_values, y_values) tuple format
-        threshold: a value that cuts off genuines from imposters, should be present
-                   in both distributions' ranges of x_values
-
+        ground_truth: an array of values with bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
+                      the ground_truth values of the pairs at each index.
+                      The index of a pair here must be the same as the 
+                      index of the same pair in similarity.
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are the similarity
+                    measures obtained by the classifier.
+                    Note that if using Euclidean distance, the values should be flipped
+                    (because the convention of similar/different is reversed).
+                    The index of a pair here must be the same as the 
+                    index of the same pair in ground_truth.
+        threshold: a value that cuts off genuines from imposters;
+                  we classify those above the threshold as genuine
+                  and those below as imposters (matching vs non-matching)
     Returns:
-        a float indicating the FNMR rate
+        a 4-way tuple representing tp, fp, fn, tp
 
-    Questions:
-    1. Does it matter if the distributions are "normed" (y_values are frequencies)?
-    2. How do we use threshold if it is not present as an exact member of 
-       x_values for both distributions? Maybe not a problem...
     '''
-    return -1.0
-
-def fmr_from_distributions(genuine, imposter, threshold):
-    '''
-    Calculates the False Match Rate (False Accept Rate, False positive rate)
-    from the given genuine and imposter distributions at the
-    given threshold.
-    The computation is based on Area-Under-the-Curve (AUC) ratios.
-
-    Args:
-        genuine: the genuine distribution in (x_values, y_values) tuple format
-        imposter: the imposter distribution in (x_values, y_values) tuple format
-        threshold: a value that cuts off genuines from imposters, should be present
-                   in both distributions' ranges of x_values
-
-    Returns:
-        a float indicating the FMR rate
-   '''
-    return -1.0
-
-def gar_from_distributions(genuine, imposter, threshold):
-    '''
-    Calculates the Genuine Accept Rate (True Accept Rate, True Positive Rate)
-    from the given genuine and imposter distributions at the
-    given threshold.
-    The computation is based on Area-Under-the-Curve (AUC) ratios.
-
-    Args:
-        genuine: the genuine distribution in (x_values, y_values) tuple format
-        imposter: the imposter distribution in (x_values, y_values) tuple format
-        threshold: a value that cuts off genuines from imposters, should be present
-                   in both distributions' ranges of x_values
-
-    Returns:
-        a float indicating the GAR rate
-   '''
-    return -1.0
-
-def fnmr_by_counting(ground_truth, similarity, threshold):
+    # force both ground_truth and similarity into classes based on threshold
+    # assuming that this won't affect ground_truth
+    # the labels "same" and "different" don't really matter;
+    # I just call them that for convenience
+    cutoff = np.vectorize(lambda x: "same" if x > threshold else "different")
+    true = cutoff(ground_truth)
+    predicted = cutoff(similarity)
+    
+    # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
+    # for details on confusion matrix usage
+    return confusion_matrix(true, predicted).ravel()
+ 
+def fnmr(ground_truth, similarity, threshold):
     '''
     Calculates the False Non-match Rate (False Reject Rate)
     by counting all false negaties
-    (similarity below threshold AND ground_truth = positive)
-    and then dividing by the sum total of all samples. ?????????????
-    ?????? what should we divide by? 
+    (similarity below threshold AND ground_truth = match)
+    and then dividing by the sum total of all ground truth match samples
     Note that len(ground_truth) must equal len(similarity)
     and values at the same index must correspond to the same pair.
 
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are the similarity
+                    measures obtained by the classifier.
+                    Note that if using Euclidean distance, the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
-        threshold: a value that cuts off genuines from imposters
+        threshold: a value that cuts off genuines from imposters;
+                  we classify those above the threshold as genuine
+                  and those below as imposters (matching vs non-matching)
     Returns:
         a float indicating the FNMR rate
-   '''
-    return -1.0
-
-def fmr_by_counting(ground_truth, similarity, threshold):
     '''
-    Calculates the False Match Rate (False Accept Rate, False positive rate)
+    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    return fn/(tp+fn)
+
+def fmr(ground_truth, similarity, threshold):
+    '''
+    Calculates the False Match Rate (False Accept Rate)
     by counting all false positives
-    (similarity above threshold AND ground_truth = negative)
-    and then dividing by the sum total of all samples. ?????????????
-    ?????? what should we divide by? 
+    (similarity above threshold AND ground_truth = no match)
+    and then dividing by the sum total of all ground truth "no match" samples
     Note that len(ground_truth) must equal len(similarity)
     and values at the same index must correspond to the same pair.
 
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are the similarity
+                    measures obtained by the classifier.
+                    Note that if using Euclidean distance, the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
-        threshold: a value that cuts off genuines from imposters
+        threshold: a value that cuts off genuines from imposters;
+                   we classify those above the threshold as genuine
+                   and those below as imposters (matching vs non-matching)
     Returns:
         a float indicating the FMR rate
-   '''
-    return -1.0
-
-def gar_by_counting(ground_truth, similarity, threshold):
     '''
-    Calculates the Genuine Accept Rate (True Accept Rate, True Positive Rate)
-    by counting all true positives 
-    (similarity above threshold AND ground_truth = same)
-    and then dividing by the sum total of all samples. ?????????????
-    ?????? what should we divide by? sum total of all samples or TP+FN????
+    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    return fp/(tn+fp)
+
+def gar(ground_truth, similarity, threshold):
+    '''
+    Calculates the Genuine Accept Rate (True Accept Rate)
+    by counting all true positives
+    (similarity above threshold AND ground_truth = match)
+    and then dividing by the sum total of all ground truth "match" samples
     Note that len(ground_truth) must equal len(similarity)
     and values at the same index must correspond to the same pair.
 
     Args:
-        ground_truth: an array of 0/1 values with 0 representing "same"
-                      and 1 representing "different". These are 
+        ground_truth: an array of values with bigger values representing "more similar"
+                      and smaller values representing "more different". These are 
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
-        similarity: an array of values between 0 and 1 with 0 representing "same"
-                    and 1 representing "different". These are the similarity
-                    measures obtained by the classifier (e.g. Euclidean
-                    distance between two feature vectors)
+        similarity: an array of values with bigger values representing "more similar"
+                    and smaller values representing "more different". These are the similarity
+                    measures obtained by the classifier.
+                    Note that if using Euclidean distance, the values should be flipped
+                    (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
-        threshold: a value that cuts off genuines from imposters
+        threshold: a value that cuts off genuines from imposters;
+                   we classify those above the threshold as genuine
+                   and those below as imposters (matching vs non-matching)
     Returns:
         a float indicating the GAR rate
-   '''
-    return -1.0
+    '''
+    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    return tp/(tp+fn)
 
-def equal_error_rate_from_counting(ground_truth, similarity, step=0.01, tolerance=0.01):
+def equal_error_rate(ground_truth, similarity, step=0.01, tolerance=0.01):
     '''
     Calculates the equal error rate by computing FMR and FNMR rates 
     for the similarity measures in similarity given ground_truth
@@ -235,8 +223,8 @@ def equal_error_rate_from_counting(ground_truth, similarity, step=0.01, toleranc
 
     '''
     for t in range(0, np.amax(similarity), step):
-        fmr = fmr_by_counting(ground_truth, similarity, t)
-        fnmr = fnmr_by_counting(ground_truth, similarity, t)
+        fmr = fmr(ground_truth, similarity, t)
+        fnmr = fnmr(ground_truth, similarity, t)
         if (abs(fmr-fnmr) < tolerance):
             return fmr
 
