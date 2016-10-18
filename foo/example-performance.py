@@ -1,4 +1,4 @@
-import performance as p
+from util import performance as p
 import matplotlib.pyplot as plt 
 execfile("vgg_vectors.txt")
 

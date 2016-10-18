@@ -99,7 +99,6 @@ if __name__ == "__main__":
     
     # initialize the network and load weights from a file
     # the VGGFace class takes care of sessions, etc and all the internal tensorflow stuff
-#    network = vggface.VGGFace()
     network = vggn.VGGFaceVanilla()
     network.load_weights(os.path.realpath('./vggface/weights/initial.ckpt'))
 
