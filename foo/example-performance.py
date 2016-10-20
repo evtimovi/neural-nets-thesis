@@ -22,7 +22,8 @@ print 'The ROC AUC score (with reciprocal Euclidean distances) is', p.roc_auc_sc
 #    print 'gar =', gar
 
 print 'the equal error rate is', p.equal_error_rate(true, flipped_dist)
-print 'the gar at 0 far is', p.gar_at_zero_far(true, flipped_dist)
+print 'the gar at 0 far from the roc curve is', p.gar_at_zero_far_from_roc_curve(true, flipped_dist)
+print 'the max and min gars at 0 far are', p.gar_at_zero_far_by_iterating(true, flipped_dist)
 
 far_values, gar_values = p.roc_curve(true,flipped_dist)
 plt.plot(far_values, gar_values)

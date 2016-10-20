@@ -312,12 +312,12 @@ def roc_auc_score(ground_truth, similarities):
     '''
     return skmet.roc_auc_score(ground_truth, similarities)
 
-def gar_at_zero_far(ground_truth, similarity):
+def gar_at_zero_far_from_roc_curve(ground_truth, similarity):
     '''
     Computes the GAR at 0 FAR measure
     (indicating true positive rate given no false positive rates)
     given the scores in ground_truth and similarity.
-    If there is no FAR = 0, then the GAR at min FAR is returned.
+    This method uses a generated ROC curve to compute the measure.
     Args:
         ground_truth: an array of values with bigger values 
                       representing "more similar"
@@ -340,4 +340,55 @@ def gar_at_zero_far(ground_truth, similarity):
         the GAR at min FAR measure
     '''
     far_values, gar_values = roc_curve(ground_truth, similarity)
-    return gar_values[0]
+    
+    # the far values have many 0s, so 
+    # pick the last one
+    i = 0
+    while far_values[i] == 0:
+        i += 1
+    
+    return gar_values[i]
+
+def gar_at_zero_far_by_iterating(ground_truth, similarity):
+    '''
+    Computes the GAR at 0 FAR measure
+    (indicating true positive rate given no false positive rates)
+    given the scores in ground_truth and similarity.
+    This method generates the GAR at 0 FAR by iterating through the 
+    array of similarity measurements.
+    Because there might be multiple instances when FAR = 0, 
+    a tuple of the max and the min GAR when FAR = 0 is returned.
+    Args:
+        ground_truth: an array of values with bigger values 
+                      representing "more similar"
+                      and smaller values representing "more different". These are 
+                      the ground_truth values of the pairs at each index.
+                      The index of a pair here must be the same as the 
+                      index of the same pair in similarity.
+        similarity: an array of values with bigger values 
+                    representing "more similar"
+                    and smaller values representing "more different". These are 
+                    the similarity measures obtained by the classifier.
+                    Note that if using Euclidean distance, 
+                    the values should be flipped
+                    (because the convention of similar/different is reversed).
+                    The index of a pair here must be the same as the 
+                    index of the same pair in ground_truth.
+
+
+    Return:
+        a tuple (max, min) where max is the larges GAR at 0 FAR and min is the smallest
+    '''
+    map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
+    map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
+
+    gars = map_gars(similarity)
+    fars = map_fars(similarity)
+    
+    gars_at_zero=[]
+
+    for i in xrange(len(fars)):
+        if fars[i] == 0:
+            gars_at_zero.append(gars[i])
+
+    return max(gars_at_zero), min(gars_at_zero)
