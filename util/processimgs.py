@@ -1,7 +1,7 @@
-import numpuy as np
+import numpy as np
 import cv2
 
-def load_image_plain(image_path):
+def load_image_plain(path):
     img = cv2.imread(path)
 
     if img is None:
@@ -10,8 +10,7 @@ def load_image_plain(image_path):
         return img
 
 def crop_to_face(img):
-    face_cascade = cv2.CascadeClassifier('openCVDetector/haarcascade_frontalface_default.xml')
-
+    face_cascade = cv2.CascadeClassifier('/home/microway/opencv/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
     gray=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     cv2.equalizeHist(gray, gray)  
     #detect faces. 
