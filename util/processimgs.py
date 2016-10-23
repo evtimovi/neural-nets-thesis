@@ -51,3 +51,37 @@ def load_crop_adjust(image_path, width=224, height=224):
     img2 = np.array([img2,])  
     return img2
 
+def load_crop_adjust_save(image_path, save_path, width=224, height=224):
+    img = load_crop_adjust(image_path, width, height)[0]
+    cv2.imwrite(save_path, img)
+
+def load_generate_meb_variations(image_path, crop_w=196, crop_h=196):
+    '''
+    loads an image, generates all crops of the specified size
+    and then returns an image OF THE SAME SIZE 
+    (i.e. the image is resized back to its original)
+    '''
+    img = load_image_plain(image_path)
+    orig_h, orig_w, orig_c = img.shape #img is a numpy array, 3rd value is channels
+    
+    final_imgs = []
+
+    i, j = 0, 0
+
+    while (crop_w + i) < orig_w:
+        while (crop_h + j) < orig_h:
+            final_imgs.append(cv2.resize(img[i:crop_w+i, j:crop_h+j], (orig_w, orig_h)))
+            j = j+1
+        j = 0
+        i = i+1
+
+    final_imgs.extend(map(lambda x: cv2.flip(x, flipCode=1), final_imgs))
+    return final_imgs
+
+def generate_meb_variations_and_save(image_path, save_base_path, 
+                                      crop_w=196, crop_h=196,
+                                      extension='.ppm'):
+    imgs = load_generate_meb_variations(image_path, crop_w, crop_h)
+
+    for i in xrange(len(imgs)):
+        cv2.imwrite(save_base_path+'_var_'+str(i)+extension, imgs[i])

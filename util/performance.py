@@ -377,7 +377,7 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
 
 
     Return:
-        a tuple (max, min) where max is the larges GAR at 0 FAR and min is the smallest
+        the larges GAR at 0 FAR 
     '''
     map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
     map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
@@ -391,4 +391,4 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
         if fars[i] == 0:
             gars_at_zero.append(gars[i])
 
-    return max(gars_at_zero), min(gars_at_zero)
+    return max(gars_at_zero)
