@@ -28,9 +28,6 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         # initialize everything else (including TF variables)
         self._setup_network_variables()
 
-        # this will hold the MEB codes we are aiming to train to
-        target_code = tf.placeholder(tf.float32, shape=[None,keysize])
-
         self.saver = parent.tf.train.Saver()
         self.weights_loaded = False
 
@@ -67,6 +64,9 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         The argument all_layers allows you to specify whether all layers
         of the network should be trained or just the last one.
         '''
+        # this will hold the MEB codes we are aiming to train to
+        target_code = tf.placeholder(tf.float32, shape=[None,keysize])
+
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(target_code * tf.log(self.get_output()), reduction_indices=[1]))
         
         if all_layers:
@@ -79,14 +79,22 @@ class VGGFaceTrainForMEB(parent.VGGFace):
 
         train_step.run(feed_dict={x_image: inputs_arr, target_code: targets_arr})
 
-        def save_weights(self, path):
-            '''
-            Uses the saver to save the session.
-            To avoid confusion, please provide an absolute path
-            by calling os.path.relpath(...) from the 
-            calling script.
-            '''
-            self.saver.save(self.sess, path)
+    def get_network_output_for(self, img):
+        '''
+        This method runs the image img through the network
+        and returns the output.
+        '''
+        x_image = self.vars[0][1]
+        return self.get_output().eval(feed_dict={x_image:img})[0]
+
+    def save_weights(self, path):
+        '''
+        Uses the saver to save the session.
+        To avoid confusion, please provide an absolute path
+        by calling os.path.relpath(...) from the 
+        calling script.
+        '''
+        self.saver.save(self.sess, path)
 
 '''
 This class inherits from the paretn VGGFace to build a 
