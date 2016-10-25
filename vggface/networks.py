@@ -22,6 +22,9 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         # (layer_type, layer_number, num_neurons, activation_function)
         self.layers.append(('linear', '41', keysize, 'sigmoid'))
 
+        # this will hold the MEB codes we are aiming to train to
+        target_code = tf.placeholder(tf.float32, shape=[None,keysize])
+
         # initialize everything else (including TF variables)
         self._setup_network_variables()
 
@@ -52,17 +55,13 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         in batches - it is assumed those will be done outside.
         Args:
             input_arr: a numpy array of all the inputs in the batch 
-            targets_arr: a numpy array of the target meb codes corresponding 
-        The intention is to provide all inputs for this batch
-        as a numpy array in input_arr
-        and all corresponding target outputs as another array in targets_arr
-        The argument checkpoint_step allows you to set checkpoints every
-        <checkpoint_step> number of training iterations (defaults to 100)
-        The argument all_layers allows you to specify whether all layers
-        of the network should be trained or just the last one.
+            targets_arr: a numpy array of the target meb codes
+                         (indices should match up between input_arr and targets_arr)
+            learning_rate: the learning rate to be used during training
+            all_layers: allows you to specify whether all layers
+                        of the network should be trained or just the last one.
+                        defaults to False (only train the MEB layer)
         '''
-        # this will hold the MEB codes we are aiming to train to
-        target_code = tf.placeholder(tf.float32, shape=[None,keysize])
 
         cross_entropy = tf.reduce_mean(-tf.reduce_sum(target_code * tf.log(self.get_output()), reduction_indices=[1]))
         
@@ -71,7 +70,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         else:
             if not self.weights_loaded:
                 print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
-            var_to_train = filter(lambda v: v.name.startswith('linear_2'), tf.trainable_variables()) 
+            var_to_train = filter(lambda v: v.name.startswith('linear_3'), tf.trainable_variables()) 
             train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy, var_list=vars_to_train)
 
         train_step.run(feed_dict={x_image: inputs_arr, target_code: targets_arr})
