@@ -17,13 +17,10 @@ class VGGFaceTrainForMEB(parent.VGGFace):
          # initialize everything in the parent
         super(VGGFaceVanilla, self).__init__()
 
-        # append an l2 layer
-        self.layers.append(('l2','37',4096,True))
-
         # append a linear layer of keysize neurons
         # for linear the syntax is:
-        # (layer_type, layer_number, num_neurons, use_relu)
-        self.layers.append(('linear', '41', keysize, True))
+        # (layer_type, layer_number, num_neurons, activation_function)
+        self.layers.append(('linear', '41', keysize, 'sigmoid'))
 
         # initialize everything else (including TF variables)
         self._setup_network_variables()

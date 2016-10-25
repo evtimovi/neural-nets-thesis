@@ -76,11 +76,12 @@ class VGGFace(object):
         self.layers.append(('pool',2,2,2,2))
         # (32): nn.View
         # (33): nn.Linear(25088 -> 4096)
-        self.layers.append(('linear','33',4096,True))
+        self.layers.append(('linear','33',4096,'relu'))
         # (34): nn.ReLU
         # (35): nn.Dropout(0.500000)
         # (36): nn.Linear(4096 -> 4096)
         # (37): nn.ReLU
+        self.layers.append(('linear','36',4096,'relu'))
         # (38): nn.Dropout(0.500000)
         # (39): nn.Linear(4096 -> 2622)
         # self.layers.append(('linear','39',2622,False))
@@ -120,7 +121,7 @@ class VGGFace(object):
                 self.add_(name, pool,layer)
             elif layer[0] == 'linear':
                 num_out = layer[2]
-                relu = layer[3]
+                func = layer[3]
                 with tf.variable_scope(name) as scope:
                     input = self.get_output()
                     input_shape = input.get_shape()
@@ -133,8 +134,15 @@ class VGGFace(object):
                         feed_in, dim = (input, int(input_shape[-1]))
                     weights = self.make_var('weights', shape=[dim, num_out])
                     biases = self.make_var('biases', [num_out])
-                    op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
-                    fc = op(feed_in, weights, biases, name=scope.name)
+                    
+                    if func == 'relu':
+                        op = tf.nn.relu
+                    elif func == 'sigmoid':
+                        op = tf.sigmoid
+#                    else:
+#                        op = tf.nn.xw_plus_b
+#                    op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
+                    fc = op(tf.nn.bias_add(tf.matmul(feed_in, weights), biases), name=scope.name)
                     self.add_(name, fc,layer)
             elif layer[0] == 'softmax':
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
