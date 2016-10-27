@@ -2,12 +2,17 @@ import os
 import random
 import json
 
-COLORFERET_PATH = './datasets/feret-color-images-only'
+COLORFERET_PATH='./datasets/feret-meb-vars/'
 
 if __name__ == "__main__":
-    subjects = os.listdir(COLORFERET_PATH)
     subject_to_meb_map={}
-    for subj in subjects:
+    subjects=[]
+    with open('./datasplits/fa.txt','r') as f:
+        for line in f:
+            subj, img_file = line.strip('\n').split(' ')
+            subjects.append(subj)
+
+    for subj in sorted(subjects):
         subject_to_meb_map[subj]=[random.SystemRandom().randint(0,1) for _ in xrange(256)]
 
     with open('subjtomeb_colorferet.json', 'w') as f:
