@@ -82,6 +82,5 @@ def generate_meb_variations_and_save(image_path, save_base_path,
                                       crop_w=196, crop_h=196,
                                       extension='.ppm'):
     imgs = load_generate_meb_variations(image_path, crop_w, crop_h)
-
     for i in xrange(len(imgs)):
         cv2.imwrite(save_base_path+'_var_'+str(i)+extension, imgs[i])
