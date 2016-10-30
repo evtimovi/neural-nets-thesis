@@ -10,6 +10,7 @@ from vggface import networks as vggn
 
 WEIGHTS_BASE = './vggface/weights/'
 EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
+TRAIN_SET_BASE = './datasets/feret-meb-vars/fa'
 
 def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     '''
@@ -50,7 +51,8 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):
     mebs = stom.values()
-    subjects_shuffled = random.SystemRandom().shuffle(stom.keys())
+    subjects_shuffled = mebs[:]
+    random.SystemRandom().shuffle(subjects_shuffled)
     random_map = {}
     for i in len(subjects_shuffled):
         random_map[subjects_shuffled[i]] = mebs[i]
@@ -76,11 +78,14 @@ def evaluate_network(network, stom, iteration, epoch):
                                iteration, epoch)
 
 def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
-    all_files = random.shuffle(ftos.keys())
+    all_subjects = ftos.keys()
+    random.SystemRandom().shuffle(all_subjects)
+    # join the set base path, subject id (first 5 chars of image) and the filename
+    all_files = map(lambda x: os.path.join(TRAIN_SET_BASE, x[:5], x), all_subjects)
 
-    for i in range(0, len(ftos), batch_size):
-        input_imgs = np.ndarray(map(lambda img: pimg.load_image_plain(img), all_files[i:(i+batch_size)]))
-        target_codes = np.ndarray(map(lambda img: ftos[stom[img]], all_files[i:(i+batch_size)]))
+    for i in range(0, len(all_files), batch_size):
+        input_imgs = map(lambda img: pimg.load_image_plain(img), all_files[i:(i+batch_size)])
+        target_codes = map(lambda img: stom[ftos[img]], all_subjects[i:(i+batch_size)])
         network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
         
         if checkpoint>0 and i%checkpoint == 0:
@@ -118,7 +123,6 @@ if __name__ == '__main__':
     learning_rate = 0.001 if learning_rate == '' else float(learning_rate)
 
     checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving):')
-    checkpoint = -1 if checkpoint == '' else int(checkpoint)
     
     network = vggn.VGGFaceTrainForMEB()
     network.load_vgg_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))

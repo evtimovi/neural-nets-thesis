@@ -23,7 +23,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         self.layers.append(('linear', '41', keysize, 'sigmoid'))
 
         # this will hold the MEB codes we are aiming to train to
-        target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
+        self.target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
 
         # initialize everything else (including TF variables)
         self._setup_network_variables()
@@ -68,17 +68,19 @@ class VGGFaceTrainForMEB(parent.VGGFace):
                         defaults to False (only train the MEB layer)
         '''
 
-        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
+        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(targets_arr * parent.tf.log(self.get_output()), reduction_indices=[1]))
         
         if all_layers:
             train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
         else:
             if not self.weights_loaded:
                 print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
-            var_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
+            vars_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
             train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy, var_list=vars_to_train)
 
-        train_step.run(feed_dict={x_image: inputs_arr, target_code: targets_arr})
+        # vars at 0 holds the input placeholder in a tuple
+        # the second entry in the tuple is the actual placeholder
+        train_step.run(feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
 
     def get_raw_output_for(self, img):
         '''

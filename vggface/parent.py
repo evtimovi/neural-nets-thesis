@@ -96,7 +96,7 @@ class VGGFace(object):
         '''
 
         # first initialize the input layer
-        x_image = tf.placeholder(tf.float32, shape=[1,224,224,3]) 
+        x_image = tf.placeholder(tf.float32, shape=[None,224,224,3]) 
         self.vars.append(('input', x_image, ['input', None]))
 
         # then initialize all following layers
