@@ -24,6 +24,8 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     with the real subject to MEB mappings.
     To generate imposter distributions, feed in an stom
     where the subjects map to MEBs that do not belong to them.
+    This operation needs to be performed in batches of the same size
+    as those used for training (because of the nature of the input tensor)
     Args:
         network: the VGGFace network, with weights initialized and trained as appropriate
         stom: a mapping of subject codes (strings) to MEB codes (arrays of 1s and 0s)
@@ -36,17 +38,24 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     '''
     subjects = stom.keys()
     match_scores=[]
+    batch_size = network.batch_size
     for s in subjects:
         subj_path = os.path.join(files_base, s)
         matches = 0
         all_files=os.listdir(subj_path)
-        for f in all_files:
-            img_path = os.path.join(subj_path, f)
-            img = pimg.load_image_plain(img_path)
-            meb = network.get_meb_for(img, threshold)
-            if meb==stom[s]:
-                matches=matches+1
+        #!!!!! Won't work if batch_size > num of files for subject
+        for i in xrange(0, len(all_files), batch_size):
+            batch = map(lambda x: pimg.load_image_plain(os.path.join(subj_path, x)), all_files[i:(i+batch_size)])
+            mebs = network.get_meb_for(batch, threshold)
+            matches = matches + len(filter(lambda x: x==stom[s], mebs))
         match_scores.append(matches)
+#        for f in all_files:
+#            img_path = os.path.join(subj_path, f)
+#            img = pimg.load_image_plain(img_path)
+#            meb = network.get_meb_for(img, threshold)
+#            if meb==stom[s]:
+#                matches=matches+1
+#        match_scores.append(matches)
     return match_scores
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):
@@ -88,7 +97,7 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
         target_codes = map(lambda img: stom[ftos[img]], all_subjects[i:(i+batch_size)])
         network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
         
-        if checkpoint>0 and i%checkpoint == 0:
+        if int(checkpoint) > 0 and i%int(checkpoint) == 0:
             network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE, 
                                                                'training-meb-epoch-' + str(epoch_n)
                                                                +'iter-' + str(i) + '.ckpt')))
