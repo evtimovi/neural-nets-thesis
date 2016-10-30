@@ -29,16 +29,21 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         self._setup_network_variables()
 
         self.saver = parent.tf.train.Saver()
+        # restorer is for VGG variables only
+        # saver is for all variables
+        self.restorer = parent.tf.train.Saver(filter(lambda x: not x.name.startswith('linear_3'),parent.tf.all_variables()))
         self.weights_loaded = False
 
-    def load_weights(self, path):
+    def load_vgg_weights(self, path):
         '''
         This method initializes the network weights from 
         a .ckpt file to be found in path
         '''
-        self.saver.restore(self.sess, path)
+        self.restorer.restore(self.sess, path)
         self.weights_loaded = True
 
+    def load_all_weights(self, path):
+        self.saver.restore(self.sess, path)
     
     def train_batch(self, inputs_arr, targets_arr,
                     learning_rate,

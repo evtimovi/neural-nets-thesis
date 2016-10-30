@@ -121,7 +121,7 @@ if __name__ == '__main__':
     checkpoint = -1 if checkpoint == '' else int(checkpoint)
     
     network = vggn.VGGFaceTrainForMEB()
-    network.load_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))
+    network.load_vgg_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))
     
     for i in xrange(1,10):
         epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, i)
