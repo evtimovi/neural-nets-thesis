@@ -17,3 +17,9 @@ The code for implementing the network in tensorflow is available on GitHub [here
 The folder `util` contains various utility modules which are NOT written in an object oriented fashion. 
 Rather, they are split into various functions. 
 So, in order to use the different performance measures, one needs to invoke `from util import performance p` and then call them by writing `p.fnmr(...)`
+
+
+TRAINING NOTE:
+The way it is set up right now, the batch size needs to be a multiple of the number of variations. 49 should work.
+This is the command to run it:
+``vggface/weights/training-meb-epoch-1iter-0.ckpt.meta``
