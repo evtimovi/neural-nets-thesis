@@ -48,6 +48,32 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
         match_scores.append(matches)
     return match_scores
 
+def get_imposter_dist(network, stom, files_base, threshold=0.5):
+    mebs = stom.values()
+    subjects_shuffled = random.SystemRandom().shuffle(stom.keys())
+    random_map = {}
+    for i in len(subjects_shuffled):
+        random_map[subjects_shuffled[i]] = mebs[i]
+    return get_matching_scores_distribution(network, random_map, files_base, threshold) 
+
+def print_performance_measures(true_genuine, genuine_dist, 
+                               true_imposter, imposter_dist,
+                               iteration, epoch):
+    all_true = true_genuine.extend(true_imposter)
+    all_dist = genuine_dist.extend(imposter_dist)
+    print 'epoch', epoch, 'iteration', iteration,
+    print 'EER:', perf.equal_error_rate(all_true, all_dist),
+    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
+
+def evaluate_network(network, stom, iteration, epoch):
+    total_vars_per_subject = 1568
+    genuine_dist = get_matching_scores_distribution(network, stom, EVAL_SET_BASE, 0.5)
+    imposter_dist = get_imposter_dist(network, stom, EVAL_SET_BASE, 0.5)
+    true_genuine = [total_vars_per_subject for _ in len(genuine_dist)]
+    true_imposter = [0 for _ in len(imposter_dist)]
+    print_performance_measures(true_genuine, genuine_dist,
+                               true_imposter, imposter_dist,
+                               iteration, epoch)
 
 def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
     all_files = random.shuffle(ftos.keys())
@@ -61,9 +87,10 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
             network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE, 
                                                                'training-meb-epoch-' + str(epoch_n)
                                                                +'iter-' + str(i) + '.ckpt')))
-            
+            evaluate_network(network, stom, i, epoch_n)        
     network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE,
                                                        'training-meb-epoch-'+str(epoch_n)+'final.ckpt')))
+    evaluate_network(network, stom, 'FINAL', 'FINAL')
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
@@ -99,5 +126,3 @@ if __name__ == '__main__':
     
     for i in xrange(1,10):
         epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, i)
-
-    
