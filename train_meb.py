@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
     checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving):')
     
-    network = vggn.VGGFaceTrainForMEB()
+    network = vggn.VGGFaceTrainForMEB(batch_size)
     network.load_vgg_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))
     
     for i in xrange(1,10):

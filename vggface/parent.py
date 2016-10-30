@@ -20,12 +20,12 @@ without having to write each one out.
 '''
 class VGGFace(object):
 
-    def __init__(self):
+    def __init__(self, batch_size=1):
         '''
         Initialize the layers array that holds a list of tuples describing each layer
         (e.g. whether it is convolutional or max pooling, strides, etc)
         '''
-        self.batch_size = 1
+        self.batch_size = batch_size
         self.vars = []
         self.layers = []
         self._setup_layers_description()
@@ -96,7 +96,7 @@ class VGGFace(object):
         '''
 
         # first initialize the input layer
-        x_image = tf.placeholder(tf.float32, shape=[None,224,224,3]) 
+        x_image = tf.placeholder(tf.float32, shape=[self.batch_size,224,224,3]) 
         self.vars.append(('input', x_image, ['input', None]))
 
         # then initialize all following layers
