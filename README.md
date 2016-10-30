@@ -22,4 +22,5 @@ So, in order to use the different performance measures, one needs to invoke `fro
 TRAINING NOTE:
 The way it is set up right now, the batch size needs to be a multiple of the number of variations. 49 should work.
 This is the command to run it:
-``vggface/weights/training-meb-epoch-1iter-0.ckpt.meta``
+``python train_meb.py < train_params.txt | tee train_out.txt``
+
