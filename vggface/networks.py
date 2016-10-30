@@ -75,7 +75,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
 
         train_step.run(feed_dict={x_image: inputs_arr, target_code: targets_arr})
 
-    def get_network_output_for(self, img):
+    def get_raw_output_for(self, img):
         '''
         This method runs the image img through the network
         and returns the output.
@@ -92,6 +92,17 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         '''
         self.saver.save(self.sess, path)
 
+    def get_meb_for(self, img, threshold=0.5): 
+        '''
+        This method runs img through the network to obtain
+        an MEB code. The quantization is performed with the given
+        threshold (default: 0.5)
+        '''
+        # we appended the input placeholder to the beginning of the vars array
+        # the actual variable there is in the second position
+        x_image = self.vars[0][1]
+        output = self.get_output().eval(feed_dict={x_image:img})[0]
+        return map(lambda x: 0 if x<threshold else 1, output)
 '''
 This class inherits from the paretn VGGFace to build a 
 vanilla VGGFace implementation meant only for evaluation.

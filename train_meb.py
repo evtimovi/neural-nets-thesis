@@ -9,6 +9,45 @@ import random
 from vggface import networks as vggn
 
 WEIGHTS_BASE = './vggface/weights/'
+EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
+
+def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
+    '''
+    This method generates genuine and imposter distributions
+    (depending on the nature of the stom argument).
+    It finds the variations for each subject (a key in stom)
+    in the folder files_base, runs them through the network,
+    and then tallies how many of those matched the MEB that 
+    this subject maps to in stom. 
+    To generate genuine distributions, feed in an stom
+    with the real subject to MEB mappings.
+    To generate imposter distributions, feed in an stom
+    where the subjects map to MEBs that do not belong to them.
+    Args:
+        network: the VGGFace network, with weights initialized and trained as appropriate
+        stom: a mapping of subject codes (strings) to MEB codes (arrays of 1s and 0s)
+        files_base: the location of the evaluating set. 
+                    It is assumed that each subject image's variations are stored in a sub-folder
+                    with a name that matches the key in stom for that subject.
+        threshold: the quantization threshold for the output from the neural network
+    Returns:
+        a genuine or imposter distribution as described above (an array)
+    '''
+    subjects = stom.keys()
+    match_scores=[]
+    for s in subjects:
+        subj_path = os.path.join(files_base, s)
+        matches = 0
+        all_files=os.listdir(subj_path)
+        for f in all_files:
+            img_path = os.path.join(subj_path, f)
+            img = pimg.load_image_plain(img_path)
+            meb = network.get_meb_for(img, threshold)
+            if meb==stom[s]:
+                matches=matches+1
+        match_scores.append(matches)
+    return match_scores
+
 
 def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
     all_files = random.shuffle(ftos.keys())
