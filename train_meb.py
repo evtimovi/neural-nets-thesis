@@ -41,6 +41,11 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     batch_size = network.batch_size
     for s in subjects:
         subj_path = os.path.join(files_base, s)
+
+        #skip those fb's that are not in the fa's
+        if not os.path.exists(subj_path):
+            continue
+
         matches = 0
         all_files=os.listdir(subj_path)
         #!!!!! Won't work if batch_size > num of files for subject
@@ -49,13 +54,6 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
             mebs = network.get_meb_for(batch, threshold)
             matches = matches + len(filter(lambda x: x==stom[s], mebs))
         match_scores.append(matches)
-#        for f in all_files:
-#            img_path = os.path.join(subj_path, f)
-#            img = pimg.load_image_plain(img_path)
-#            meb = network.get_meb_for(img, threshold)
-#            if meb==stom[s]:
-#                matches=matches+1
-#        match_scores.append(matches)
     return match_scores
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):

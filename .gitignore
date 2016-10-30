@@ -100,3 +100,6 @@ datasets/
 
 # previous work
 *__ignore
+
+#weights stuff
+vggface/weights/*

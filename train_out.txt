@@ -1,0 +1,3 @@
+no argument for filename to subject id map specified, using default: ./datasplits/fa_filepath_to_subject_colorferet.json
+no argument for subject id to meb code map specified, using default: ./datasplits/subjtomeb_colorferet.json
+Please, specify batch size (default 1000):Please, specify learning rate:Please, specify how often to save the weights during training (empty for no saving):
