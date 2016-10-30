@@ -95,14 +95,13 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         path_ftos = './datasplits/fa_filepath_to_subject_colorferet.json'
-        print 'no argument for filename to subject id map specified, using default:', path_dict
+        print 'no argument for filename to subject id map specified, using default:', path_ftos
     else:
         path_ftos = sys.argv[1]
 
     if len(sys.argv) < 3:
-        ./datasplits/subjtomeb_colorferet.json
         path_stom = './datasplits/subjtomeb_colorferet.json'
-        print 'no argument for subject id to meb code map specified, using default:', path_dict
+        print 'no argument for subject id to meb code map specified, using default:', path_stom
     else:
         path_stom = sys.argv[2]
 
@@ -113,13 +112,13 @@ if __name__ == '__main__':
         stom = json.load(f)
 
     batch_size = raw_input('Please, specify batch size (default 1000):')
-    batch_size = 1000 if batch_size is None else int(batch_size)
+    batch_size = 1000 if batch_size == '' else int(batch_size)
 
     learning_rate = raw_input('Please, specify learning rate:')
-    learning_rate = 0.001 if learning_rate is None else float(learning_rate)
+    learning_rate = 0.001 if learning_rate == '' else float(learning_rate)
 
-    checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving)')
-    checkpoint = -1 if checkpoint is None else int(checkpoint)
+    checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving):')
+    checkpoint = -1 if checkpoint == '' else int(checkpoint)
     
     network = vggn.VGGFaceTrainForMEB()
     network.load_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))

@@ -15,7 +15,7 @@ and train a neural network that maps faces to MEB codes
 class VGGFaceTrainForMEB(parent.VGGFace):
     def __init__(self, keysize=256):
          # initialize everything in the parent
-        super(VGGFaceVanilla, self).__init__()
+        super(VGGFaceTrainForMEB, self).__init__()
 
         # append a linear layer of keysize neurons
         # for linear the syntax is:
@@ -23,7 +23,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         self.layers.append(('linear', '41', keysize, 'sigmoid'))
 
         # this will hold the MEB codes we are aiming to train to
-        target_code = tf.placeholder(tf.float32, shape=[None,keysize])
+        target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
 
         # initialize everything else (including TF variables)
         self._setup_network_variables()
@@ -63,15 +63,15 @@ class VGGFaceTrainForMEB(parent.VGGFace):
                         defaults to False (only train the MEB layer)
         '''
 
-        cross_entropy = tf.reduce_mean(-tf.reduce_sum(target_code * tf.log(self.get_output()), reduction_indices=[1]))
+        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
         
         if all_layers:
-            train_step =  tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
+            train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
         else:
             if not self.weights_loaded:
                 print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
-            var_to_train = filter(lambda v: v.name.startswith('linear_3'), tf.trainable_variables()) 
-            train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy, var_list=vars_to_train)
+            var_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
+            train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy, var_list=vars_to_train)
 
         train_step.run(feed_dict={x_image: inputs_arr, target_code: targets_arr})
 
