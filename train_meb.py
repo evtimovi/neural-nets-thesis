@@ -87,6 +87,7 @@ def evaluate_network(network, stom, iteration, epoch):
 def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
     all_subjects = ftos.keys()
     random.SystemRandom().shuffle(all_subjects)
+
     # join the set base path, subject id (first 5 chars of image) and the filename
     all_files = map(lambda x: os.path.join(TRAIN_SET_BASE, x[:5], x), all_subjects)
 
@@ -95,10 +96,12 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
         target_codes = map(lambda img: stom[ftos[img]], all_subjects[i:(i+batch_size)])
         network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
         
-        if int(checkpoint) > 0 and i%int(checkpoint) == 0:
+        print 'trained batch', i, 'in epoch', epoch_n,
+
+        if int(checkpoint) > 0 and i > 0 and i%int(checkpoint) == 0:
             network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE, 
                                                                'training-meb-epoch-' + str(epoch_n)
-                                                               +'iter-' + str(i) + '.ckpt')))
+                                                               +'-iter-' + str(i) + '.ckpt')))
             evaluate_network(network, stom, i, epoch_n)        
     network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE,
                                                        'training-meb-epoch-'+str(epoch_n)+'final.ckpt')))
@@ -123,16 +126,19 @@ if __name__ == '__main__':
     with open(os.path.realpath(path_stom),'r') as f:
         stom = json.load(f)
 
-    batch_size = raw_input('Please, specify batch size (default 1000):')
-    batch_size = 1000 if batch_size == '' else int(batch_size)
+#    batch_size = raw_input('Please, specify batch size (default 1000):')
+#    batch_size = 1000 if batch_size == '' else int(batch_size)
 
-    learning_rate = raw_input('Please, specify learning rate:')
-    learning_rate = 0.001 if learning_rate == '' else float(learning_rate)
+#    learning_rate = raw_input('Please, specify learning rate:')
+#    learning_rate = 0.001 if learning_rate == '' else float(learning_rate)
 
-    checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving):')
-    
+#   checkpoint = raw_input('Please, specify how often to save the weights during training (empty for no saving):')
+    batch_size = 49
+    learning_rate = 0.001
+    checkpoint = 2*49 
+
     network = vggn.VGGFaceTrainForMEB(batch_size)
     network.load_vgg_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))
-    
+
     for i in xrange(1,10):
         epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, i)
