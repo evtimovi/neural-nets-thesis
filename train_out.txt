@@ -1,0 +1,166 @@
+no argument for filename to subject id map specified, using default: ./datasplits/fa_filepath_to_subject_colorferet.json
+no argument for subject id to meb code map specified, using default: ./datasplits/subjtomeb_colorferet.json
+trained batch 0 in epoch 1
+trained batch 49 in epoch 1
+trained batch 98 in epoch 1
+trained batch 147 in epoch 1
+trained batch 196 in epoch 1
+trained batch 245 in epoch 1
+trained batch 294 in epoch 1
+trained batch 343 in epoch 1
+trained batch 392 in epoch 1
+trained batch 441 in epoch 1
+trained batch 490 in epoch 1
+trained batch 539 in epoch 1
+trained batch 588 in epoch 1
+trained batch 637 in epoch 1
+trained batch 686 in epoch 1
+trained batch 735 in epoch 1
+trained batch 784 in epoch 1
+trained batch 833 in epoch 1
+trained batch 882 in epoch 1
+trained batch 931 in epoch 1
+trained batch 980 in epoch 1
+trained batch 1029 in epoch 1
+trained batch 1078 in epoch 1
+trained batch 1127 in epoch 1
+trained batch 1176 in epoch 1
+trained batch 1225 in epoch 1
+trained batch 1274 in epoch 1
+trained batch 1323 in epoch 1
+trained batch 1372 in epoch 1
+trained batch 1421 in epoch 1
+trained batch 1470 in epoch 1
+trained batch 1519 in epoch 1
+trained batch 1568 in epoch 1
+trained batch 1617 in epoch 1
+trained batch 1666 in epoch 1
+trained batch 1715 in epoch 1
+trained batch 1764 in epoch 1
+trained batch 1813 in epoch 1
+trained batch 1862 in epoch 1
+trained batch 1911 in epoch 1
+trained batch 1960 in epoch 1
+trained batch 2009 in epoch 1
+trained batch 2058 in epoch 1
+trained batch 2107 in epoch 1
+trained batch 2156 in epoch 1
+trained batch 2205 in epoch 1
+trained batch 2254 in epoch 1
+trained batch 2303 in epoch 1
+trained batch 2352 in epoch 1
+trained batch 2401 in epoch 1
+trained batch 2450 in epoch 1
+trained batch 2499 in epoch 1
+trained batch 2548 in epoch 1
+trained batch 2597 in epoch 1
+trained batch 2646 in epoch 1
+trained batch 2695 in epoch 1
+trained batch 2744 in epoch 1
+trained batch 2793 in epoch 1
+trained batch 2842 in epoch 1
+trained batch 2891 in epoch 1
+trained batch 2940 in epoch 1
+trained batch 2989 in epoch 1
+trained batch 3038 in epoch 1
+trained batch 3087 in epoch 1
+trained batch 3136 in epoch 1
+trained batch 3185 in epoch 1
+trained batch 3234 in epoch 1
+trained batch 3283 in epoch 1
+trained batch 3332 in epoch 1
+trained batch 3381 in epoch 1
+trained batch 3430 in epoch 1
+trained batch 3479 in epoch 1
+trained batch 3528 in epoch 1
+trained batch 3577 in epoch 1
+trained batch 3626 in epoch 1
+trained batch 3675 in epoch 1
+trained batch 3724 in epoch 1
+trained batch 3773 in epoch 1
+trained batch 3822 in epoch 1
+trained batch 3871 in epoch 1
+trained batch 3920 in epoch 1
+trained batch 3969 in epoch 1
+trained batch 4018 in epoch 1
+trained batch 4067 in epoch 1
+trained batch 4116 in epoch 1
+trained batch 4165 in epoch 1
+trained batch 4214 in epoch 1
+trained batch 4263 in epoch 1
+trained batch 4312 in epoch 1
+trained batch 4361 in epoch 1
+trained batch 4410 in epoch 1
+trained batch 4459 in epoch 1
+trained batch 4508 in epoch 1
+trained batch 4557 in epoch 1
+trained batch 4606 in epoch 1
+trained batch 4655 in epoch 1
+trained batch 4704 in epoch 1
+trained batch 4753 in epoch 1
+trained batch 4802 in epoch 1
+trained batch 4851 in epoch 1
+trained batch 4900 in epoch 1
+trained batch 4949 in epoch 1
+trained batch 4998 in epoch 1
+trained batch 5047 in epoch 1
+trained batch 5096 in epoch 1
+trained batch 5145 in epoch 1
+trained batch 5194 in epoch 1
+trained batch 5243 in epoch 1
+trained batch 5292 in epoch 1
+trained batch 5341 in epoch 1
+trained batch 5390 in epoch 1
+trained batch 5439 in epoch 1
+trained batch 5488 in epoch 1
+trained batch 5537 in epoch 1
+trained batch 5586 in epoch 1
+trained batch 5635 in epoch 1
+trained batch 5684 in epoch 1
+trained batch 5733 in epoch 1
+trained batch 5782 in epoch 1
+trained batch 5831 in epoch 1
+trained batch 5880 in epoch 1
+trained batch 5929 in epoch 1
+trained batch 5978 in epoch 1
+trained batch 6027 in epoch 1
+trained batch 6076 in epoch 1
+trained batch 6125 in epoch 1
+trained batch 6174 in epoch 1
+trained batch 6223 in epoch 1
+trained batch 6272 in epoch 1
+started evaluation at Mon Oct 31 13:38:04 2016 **evaluating: 0 matches for subject 00842 found in 33.019472 seconds total time 33.0212 time thru network 32.059709
+**evaluating: 0 matches for subject 00778 found in 32.945766 seconds total time 32.950124 time thru network 31.848827
+**evaluating: 0 matches for subject 00412 found in 32.794753 seconds total time 32.799096 time thru network 31.872094
+**evaluating: 0 matches for subject 00413 found in 32.92384 seconds total time 32.927592 time thru network 31.95594
+**evaluating: 0 matches for subject 00410 found in 32.789923 seconds total time 32.794187 time thru network 31.85487
+**evaluating: 0 matches for subject 00411 found in 32.62781 seconds total time 32.629705 time thru network 31.734784
+**evaluating: 0 matches for subject 00416 found in 32.848785 seconds total time 32.852485 time thru network 31.898392
+**evaluating: 0 matches for subject 00417 found in 32.832516 seconds total time 32.83444 time thru network 31.830532
+**evaluating: 0 matches for subject 00414 found in 32.551215 seconds total time 32.555452 time thru network 31.664644
+**evaluating: 0 matches for subject 00415 found in 32.526849 seconds total time 32.528742 time thru network 31.641056
+**evaluating: 0 matches for subject 00418 found in 32.560443 seconds total time 32.564019 time thru network 31.683366
+**evaluating: 0 matches for subject 00419 found in 32.800146 seconds total time 32.802233 time thru network 31.868937
+**evaluating: 0 matches for subject 00559 found in 32.778632 seconds total time 32.781604 time thru network 31.771125
+**evaluating: 0 matches for subject 00558 found in 32.663646 seconds total time 32.670755 time thru network 31.743235
+**evaluating: 0 matches for subject 00553 found in 33.054148 seconds total time 33.056005 time thru network 31.918406
+**evaluating: 0 matches for subject 00552 found in 32.786356 seconds total time 32.790679 time thru network 31.751003
+**evaluating: 0 matches for subject 00551 found in 32.9666 seconds total time 32.970134 time thru network 31.856676
+**evaluating: 0 matches for subject 00550 found in 32.762809 seconds total time 32.767005 time thru network 31.747918
+**evaluating: 0 matches for subject 00557 found in 32.867071 seconds total time 32.869826 time thru network 31.845195
+**evaluating: 0 matches for subject 00556 found in 33.034704 seconds total time 33.037699 time thru network 31.941707
+**evaluating: 0 matches for subject 00555 found in 32.910014 seconds total time 32.911801 time thru network 31.838601
+**evaluating: 0 matches for subject 00554 found in 32.823067 seconds total time 32.824964 time thru network 31.788214
+**evaluating: 0 matches for subject 00131 found in 32.468629 seconds total time 32.472893 time thru network 31.58522
+**evaluating: 0 matches for subject 00852 found in 32.667504 seconds total time 32.669325 time thru network 31.760723
+**evaluating: 0 matches for subject 00896 found in 32.867786 seconds total time 32.871832 time thru network 31.857666
+**evaluating: 0 matches for subject 00850 found in 32.728053 seconds total time 32.731564 time thru network 31.777881
+**evaluating: 0 matches for subject 00851 found in 32.684018 seconds total time 32.68825 time thru network 31.776702
+**evaluating: 0 matches for subject 00856 found in 32.673634 seconds total time 32.681222 time thru network 31.766324
+**evaluating: 0 matches for subject 00857 found in 32.556461 seconds total time 32.558365 time thru network 31.663558
+**evaluating: 0 matches for subject 00854 found in 32.882775 seconds total time 32.886526 time thru network 31.857609
+**evaluating: 0 matches for subject 00897 found in 32.414228 seconds total time 32.418175 time thru network 31.581492
+**evaluating: 0 matches for subject 00858 found in 32.564858 seconds total time 32.566735 time thru network 31.691607
+**evaluating: 0 matches for subject 00859 found in 32.667394 seconds total time 32.671649 time thru network 31.767606
+**evaluating: 0 matches for subject 00469 found in 32.788659 seconds total time 32.792634 time thru network 31.756034
+**evaluating: 0 matches for subject 00919 found in 32.900061 seconds t
