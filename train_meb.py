@@ -38,8 +38,6 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
         a genuine or imposter distribution as described above (an array)
     '''
     subjects = stom.keys()
-    # pick only 5*49 = 245 subjects from all the subjects present (random)
-#    subjects_sample = random.SystemRandom().sample(subjects, 5*49)
     match_scores=[]
     batch_size = network.batch_size
 
@@ -54,9 +52,9 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
         matches = 0
         # sample 245 times as many images for each subject than the batch size
         # only use these random images in the evaluation
-        # 245 was pixed as a multiple of 49 - the batch size that works
+        # 196 was pixed as a multiple of 49 - the batch size that works
         # given the number of images in the folder for each subject
-        all_files = random.SystemRandom().sample(os.listdir(subj_path), 245)
+        all_files = random.SystemRandom().sample(os.listdir(subj_path), 196)
 
         #!!!!! Won't work if batch_size > num of files for subject
         for i in xrange(0, len(all_files), batch_size):
@@ -72,7 +70,7 @@ def get_imposter_dist(network, stom, files_base, threshold=0.5):
     subjects_shuffled = mebs[:]
     random.SystemRandom().shuffle(subjects_shuffled)
     random_map = {}
-    for i in len(subjects_shuffled):
+    for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
     return get_matching_scores_distribution(network, random_map, files_base, threshold) 
 
