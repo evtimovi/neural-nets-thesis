@@ -38,6 +38,8 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
         a genuine or imposter distribution as described above (an array)
     '''
     subjects = stom.keys()
+    # pick only 5*49 = 245 subjects from all the subjects present (random)
+    subjects_sample = random.SystemRandom().sample(subjects, 5*49)
     match_scores=[]
     batch_size = network.batch_size
     for s in subjects:
