@@ -44,7 +44,7 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     batch_size = network.batch_size
 
     for s in subjects:
-        start_subj = time.clock()
+#        start_subj = time.clock()
         subj_path = os.path.join(files_base, s)
 
         #skip those fb's that are not in the fa's
@@ -52,34 +52,19 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
             continue
 
         matches = 0
-
-        time_network=0
-
         # sample 245 times as many images for each subject than the batch size
         # only use these random images in the evaluation
         # 245 was pixed as a multiple of 49 - the batch size that works
         # given the number of images in the folder for each subject
         all_files = random.SystemRandom().sample(os.listdir(subj_path), 245)
 
-        start = time.clock()
-
         #!!!!! Won't work if batch_size > num of files for subject
         for i in xrange(0, len(all_files), batch_size):
             batch = map(lambda x: pimg.load_image_plain(os.path.join(subj_path, x)), all_files[i:(i+batch_size)])
             
-            start_network = time.clock()
-
             mebs = network.get_meb_for(batch, threshold)
-
-            end_network = time.clock()
-
-            time_network = time_network + (end_network - start_network)
-
             matches = matches + len(filter(lambda x: x==stom[s], mebs))
         match_scores.append(matches)
-        end = time.clock()
-        print '**evaluating:', matches, 'matches for subject', s, 'found in', str(end-start), 'seconds',
-        print 'total time', end-start_subj, 'time thru network', time_network
     return match_scores
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):
