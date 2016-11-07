@@ -42,7 +42,7 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     subjects_sample = random.SystemRandom().sample(subjects, 5*49)
     match_scores=[]
     batch_size = network.batch_size
-    for s in subjects:
+    for s in subjects_sample:
         start_subj = time.clock()
         subj_path = os.path.join(files_base, s)
 
@@ -115,7 +115,7 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
         target_codes = map(lambda img: stom[ftos[img]], all_subjects[i:(i+batch_size)])
         network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
         
-        print 'trained batch', i, 'in epoch', epoch_n
+        print 'trained batch', i/batch_size, 'in epoch', epoch_n
 
         if int(checkpoint) > 0 and i > 0 and i%int(checkpoint) == 0:
             network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE, 
