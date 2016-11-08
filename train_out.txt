@@ -129,44 +129,12 @@ trained batch 125 in epoch 1
 trained batch 126 in epoch 1
 trained batch 127 in epoch 1
 trained batch 128 in epoch 1
-started evaluation at Tue Nov  8 08:30:31 2016 subject 00550 matches 0 in time 4.100904 current time: Tue Nov  8 08:31:43 2016
-subject 00850 matches 0 in time 4.092747 current time: Tue Nov  8 08:32:15 2016
-subject 00300 matches 0 in time 4.071215 current time: Tue Nov  8 08:34:09 2016
-subject 00450 matches 0 in time 4.050964 current time: Tue Nov  8 08:36:15 2016
-subject 00950 matches 0 in time 4.092958 current time: Tue Nov  8 08:40:04 2016
-subject 00600 matches 0 in time 4.05609 current time: Tue Nov  8 08:46:26 2016
-subject 00250 matches 0 in time 4.064414 current time: Tue Nov  8 08:46:54 2016
-subject 00900 matches 0 in time 4.063933 current time: Tue Nov  8 08:48:44 2016
-subject 00200 matches 0 in time 4.062036 current time: Tue Nov  8 08:50:50 2016
-subject 00050 matches 0 in time 4.058754 current time: Tue Nov  8 08:53:44 2016
-subject 00500 matches 0 in time 4.076113 current time: Tue Nov  8 08:54:16 2016
-subject 00150 matches 0 in time 4.093131 current time: Tue Nov  8 09:01:16 2016
-subject 00750 matches 0 in time 4.12074 current time: Tue Nov  8 09:03:15 2016
-subject 01000 matches 0 in time 4.078857 current time: Tue Nov  8 09:05:41 2016
-subject 00800 matches 0 in time 4.077005 current time: Tue Nov  8 09:09:22 2016
-subject 00650 matches 0 in time 4.057729 current time: Tue Nov  8 09:10:49 2016
-subject 00100 matches 0 in time 4.048934 current time: Tue Nov  8 09:13:19 2016
-subject 00400 matches 0 in time 4.084717 current time: Tue Nov  8 09:14:57 2016
-subject 00350 matches 0 in time 4.06589 current time: Tue Nov  8 09:25:58 2016
-subject 00700 matches 0 in time 4.046022 current time: Tue Nov  8 09:30:51 2016
-subject 00550 matches 0 in time 4.07601 current time: Tue Nov  8 09:34:25 2016
-subject 00850 matches 0 in time 4.103711 current time: Tue Nov  8 09:34:56 2016
-subject 00300 matches 0 in time 4.048956 current time: Tue Nov  8 09:36:51 2016
-subject 00950 matches 0 in time 4.081592 current time: Tue Nov  8 09:42:43 2016
-subject 00200 matches 0 in time 4.065964 current time: Tue Nov  8 09:44:10 2016
-subject 00600 matches 0 in time 4.072008 current time: Tue Nov  8 09:49:10 2016
-subject 00250 matches 0 in time 4.076212 current time: Tue Nov  8 09:49:38 2016
-subject 00350 matches 0 in time 4.069152 current time: Tue Nov  8 09:50:49 2016
-subject 00900 matches 0 in time 4.096874 current time: Tue Nov  8 09:51:21 2016
-subject 00400 matches 0 in time 4.058504 current time: Tue Nov  8 09:53:39 2016
-subject 00050 matches 0 in time 4.063662 current time: Tue Nov  8 09:56:33 2016
-subject 00500 matches 0 in time 4.100626 current time: Tue Nov  8 09:57:05 2016
-subject 00150 matches 0 in time 4.091151 current time: Tue Nov  8 10:04:04 2016
-subject 00750 matches 0 in time 4.089031 current time: Tue Nov  8 10:06:07 2016
-subject 01000 matches 0 in time 4.082495 current time: Tue Nov  8 10:08:37 2016
-subject 00800 matches 0 in time 4.088538 current time: Tue Nov  8 10:12:15 2016
-subject 00650 matches 0 in time 4.058553 current time: Tue Nov  8 10:13:37 2016
-subject 00100 matches 0 in time 4.045613 current time: Tue Nov  8 10:16:08 2016
-subject 00450 matches 0 in time 4.054275 current time: Tue Nov  8 10:31:07 2016
-subject 00700 matches 0 in time 4.035648 current time: Tue Nov  8 10:33:53 2016
-epoch 1 iteration 6272 EER:
+started evaluation at Tue Nov  8 10:51:09 2016 subject 00550 matches 0 in time 3.962523 current time: Tue Nov  8 10:52:18 2016
+subject 00850 matches 0 in time 3.948315 current time: Tue Nov  8 10:52:49 2016
+subject 00300 matches 0 in time 3.960316 current time: Tue Nov  8 10:54:41 2016
+subject 00450 matches 0 in time 3.958818 current time: Tue Nov  8 10:56:44 2016
+subject 00950 matches 0 in time 3.966626 current time: Tue Nov  8 11:00:27 2016
+subject 00600 matches 0 in time 3.95561 current time: Tue Nov  8 11:07:02 2016
+subject 00250 matches 0 in time 3.968182 current time: Tue Nov  8 11:07:29 2016
+subject 00900 matches 0 in time 3.976777 current time: Tue Nov  8 11:09:16 2016
+subject 00200 matches 0 in time 3.962005 current time: Tue Nov  8 11:11:19 2016

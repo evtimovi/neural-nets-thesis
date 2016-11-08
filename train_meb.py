@@ -96,8 +96,10 @@ def print_performance_measures(true_genuine, genuine_dist,
         json.dump(genuine_dist, f)
         json.dump(true_imposter, f)
         json.dump(imposter_dist, f)
-    all_true = true_genuine.extend(true_imposter)
-    all_dist = genuine_dist.extend(imposter_dist)
+    all_true = true_genuine[:]
+    all_dist = genuine_dist[:]
+    all_true.extend(true_imposter)
+    all_dist.extend(imposter_dist)
     print 'epoch', epoch, 'iteration', iteration,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
     print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
