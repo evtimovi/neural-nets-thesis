@@ -12,6 +12,7 @@ from vggface import networks as vggn
 WEIGHTS_BASE = './vggface/weights/'
 EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
 TRAIN_SET_BASE = './datasets/feret-meb-vars/fa'
+SAMPLE_SIZE = 196 # number of images per subject used to evaluate the network 
 
 def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     '''
@@ -58,7 +59,7 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
         # only use these random images in the evaluation
         # 196 was pixed as a multiple of 49 - the batch size that works
         # given the number of images in the folder for each subject
-        all_files = random.SystemRandom().sample(os.listdir(subj_path), 196)
+        all_files = random.SystemRandom().sample(os.listdir(subj_path), SAMPLE_SIZE)
 
         #!!!!! Won't work if batch_size > num of files for subject
         for i in xrange(0, len(all_files), batch_size):
@@ -90,6 +91,11 @@ def get_imposter_dist(network, stom, files_base, threshold=0.5):
 def print_performance_measures(true_genuine, genuine_dist, 
                                true_imposter, imposter_dist,
                                iteration, epoch):
+    with open('distributions_iter_' + str(iteration) + '_epoch_' + str(epoch) + '.json', 'a') as f:
+        json.dump(true_genuine, f)
+        json.dump(genuine_dist, f)
+        json.dump(true_imposter, f)
+        json.dump(imposter_dist, f)
     all_true = true_genuine.extend(true_imposter)
     all_dist = genuine_dist.extend(imposter_dist)
     print 'epoch', epoch, 'iteration', iteration,
@@ -97,11 +103,11 @@ def print_performance_measures(true_genuine, genuine_dist,
     print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
 def evaluate_network(network, stom, iteration, epoch):
-    total_vars_per_subject = 1568
+    total_vars_per_subject = SAMPLE_SIZE #196 #1568
     genuine_dist = get_matching_scores_distribution(network, stom, EVAL_SET_BASE, 0.5)
     imposter_dist = get_imposter_dist(network, stom, EVAL_SET_BASE, 0.5)
-    true_genuine = [total_vars_per_subject for _ in len(genuine_dist)]
-    true_imposter = [0 for _ in len(imposter_dist)]
+    true_genuine = [total_vars_per_subject for _ in xrange(len(genuine_dist))]
+    true_imposter = [0 for _ in xrange(len(imposter_dist))]
     print_performance_measures(true_genuine, genuine_dist,
                                true_imposter, imposter_dist,
                                iteration, epoch)
