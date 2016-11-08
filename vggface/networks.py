@@ -68,6 +68,8 @@ class VGGFaceTrainForMEB(parent.VGGFace):
             all_layers: allows you to specify whether all layers
                         of the network should be trained or just the last one.
                         defaults to False (only train the MEB layer)
+        Returns:
+            the cross entropy loss after training the batch
         '''
 
         cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(targets_arr * parent.tf.log(self.get_output()), reduction_indices=[1]))
@@ -82,7 +84,10 @@ class VGGFaceTrainForMEB(parent.VGGFace):
 
         # vars at 0 holds the input placeholder in a tuple
         # the second entry in the tuple is the actual placeholder
-        train_step.run(feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
+        _, loss = self.sess.run([train_step, cross_entropy],
+                                 feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
+        
+        return loss
 
     def get_raw_output_for(self, img):
         '''

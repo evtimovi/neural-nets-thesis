@@ -9,137 +9,42 @@ import os
 import random
 from vggface import networks as vggn
 
-WEIGHTS_BASE = './vggface/weights/'
 EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
 TRAIN_SET_BASE = './datasets/feret-meb-vars/fa'
-SAMPLE_SIZE = 196 # number of images per subject used to evaluate the network 
+EVALUATION_SAMPLE_SIZE = 196 # number of images per subject used to evaluate the network 
 
-def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
-    '''
-    This method generates genuine and imposter distributions
-    (depending on the nature of the stom argument).
-    It finds the variations for each subject (a key in stom)
-    in the folder files_base, runs them through the network,
-    and then tallies how many of those matched the MEB that 
-    this subject maps to in stom. 
-    To generate genuine distributions, feed in an stom
-    with the real subject to MEB mappings.
-    To generate imposter distributions, feed in an stom
-    where the subjects map to MEBs that do not belong to them.
-    This operation needs to be performed in batches of the same size
-    as those used for training (because of the nature of the input tensor)
-    Args:
-        network: the VGGFace network, with weights initialized and trained as appropriate
-        stom: a mapping of subject codes (strings) to MEB codes (arrays of 1s and 0s)
-        files_base: the location of the evaluating set. 
-                    It is assumed that each subject image's variations are stored in a sub-folder
-                    with a name that matches the key in stom for that subject.
-        threshold: the quantization threshold for the output from the neural network
-    Returns:
-        a genuine or imposter distribution as described above (an array)
-    '''
-    subjects = stom.keys()
-    match_scores=[]
-    batch_size = network.batch_size
+def epoch(network, ftos, stom, batch_size, learning_rate, save_path, checkpoint, epoch_n):
+    save_path_weights = os.path.join(save_path, 'weights')
+    
 
-    start_subj, end_subj = 0,0
+    if not os.path.exists(save_path_weights):
+        os.mkdir(save_path_weights)
 
-    for s in subjects:
-        if int(s)%50 == 0:
-            start_subj = time.clock()
+    all_subjects = stom.keys()
+    all_filenames = []
+    for s in all_subjects:
+        all_filenames.extend(os.listdir(os.path.join(TRAIN_SET_BASE, s)))
 
-        subj_path = os.path.join(files_base, s)
-
-        #skip those fb's that are not in the fa's
-        if not os.path.exists(subj_path):
-            continue
-
-        matches = 0
-        # sample 245 times as many images for each subject than the batch size
-        # only use these random images in the evaluation
-        # 196 was pixed as a multiple of 49 - the batch size that works
-        # given the number of images in the folder for each subject
-        all_files = random.SystemRandom().sample(os.listdir(subj_path), SAMPLE_SIZE)
-
-        #!!!!! Won't work if batch_size > num of files for subject
-        for i in xrange(0, len(all_files), batch_size):
-            batch = map(lambda x: pimg.load_image_plain(os.path.join(subj_path, x)), all_files[i:(i+batch_size)])
-            
-            mebs = network.get_meb_for(batch, threshold)
-            matches = matches + len(filter(lambda x: x==stom[s], mebs))
-        match_scores.append(matches)
-
-        if int(s)%50 == 0:
-            end_subj = time.clock()
-            print 'subject', s, 'matches', matches,
-            print 'in time', (end_subj - start_subj),
-            print 'current time:', time.ctime()
-            sys.stdout.flush()
-
-    return match_scores
-
-def get_imposter_dist(network, stom, files_base, threshold=0.5):
-    subjects = stom.keys()
-    subjects_shuffled = subjects[:]
-    random.SystemRandom().shuffle(subjects_shuffled)
-    mebs = stom.values()
-    random_map = {}
-    for i in xrange(len(subjects_shuffled)):
-        random_map[subjects_shuffled[i]] = mebs[i]
-    return get_matching_scores_distribution(network, random_map, files_base, threshold) 
-
-def print_performance_measures(true_genuine, genuine_dist, 
-                               true_imposter, imposter_dist,
-                               iteration, epoch):
-    with open('distributions_iter_' + str(iteration) + '_epoch_' + str(epoch) + '.json', 'a') as f:
-        json.dump(true_genuine, f)
-        json.dump(genuine_dist, f)
-        json.dump(true_imposter, f)
-        json.dump(imposter_dist, f)
-    all_true = true_genuine[:]
-    all_dist = genuine_dist[:]
-    all_true.extend(true_imposter)
-    all_dist.extend(imposter_dist)
-    print 'epoch', epoch, 'iteration', iteration,
-    print 'EER:', perf.equal_error_rate(all_true, all_dist),
-    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
-
-def evaluate_network(network, stom, iteration, epoch):
-    total_vars_per_subject = SAMPLE_SIZE #196 #1568
-    genuine_dist = get_matching_scores_distribution(network, stom, EVAL_SET_BASE, 0.5)
-    imposter_dist = get_imposter_dist(network, stom, EVAL_SET_BASE, 0.5)
-    true_genuine = [total_vars_per_subject for _ in xrange(len(genuine_dist))]
-    true_imposter = [0 for _ in xrange(len(imposter_dist))]
-    print_performance_measures(true_genuine, genuine_dist,
-                               true_imposter, imposter_dist,
-                               iteration, epoch)
-
-def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
-    all_subjects = ftos.keys()
-    random.SystemRandom().shuffle(all_subjects)
+    random.SystemRandom().shuffle(all_filenames)
 
     # join the set base path, subject id (first 5 chars of image) and the filename
-    all_files = map(lambda x: os.path.join(TRAIN_SET_BASE, x[:5], x), all_subjects)
+    all_paths = map(lambda x: os.path.join(TRAIN_SET_BASE, x[:5], x), all_filenames)
 
-    for i in range(0, len(all_files), batch_size):
-        input_imgs = map(lambda img: pimg.load_image_plain(img), all_files[i:(i+batch_size)])
-        target_codes = map(lambda img: stom[ftos[img]], all_subjects[i:(i+batch_size)])
-        network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
+    for i in range(0, len(all_paths), batch_size):
+        input_imgs = map(lambda img: pimg.load_image_plain(img), all_paths[i:(i+batch_size)])
+        target_codes = map(lambda img: stom[ftos[img]], all_filenames[i:(i+batch_size)])
+        loss = network.train_batch(input_imgs, target_codes, learning_rate, all_layers=False)
         
-        print 'trained batch', i/batch_size, 'in epoch', epoch_n
+        print 'trained batch', i/batch_size, 'in epoch', epoch_n, 'loss:', loss
+        sys.stdout.flush()
 
         if int(checkpoint) > 0 and i > 0 and i%int(checkpoint) == 0:
-            network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE, 
-                                                               'training-meb-epoch-' + str(epoch_n)
-                                                               +'-iter-' + str(i) + '.ckpt')))
-            print 'started evaluation at', time.ctime(),
-            sys.stdout.flush()
-            evaluate_network(network, stom, i, epoch_n)        
-            print 'finished at', time.ctime()
-    network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE,
-                                                       'training-meb-epoch-'+str(epoch_n)+'final.ckpt')))
-    evaluate_network(network, stom, 'FINAL', 'FINAL')
+            network.save_weights(os.path.realpath(os.path.join(save_path_weights, 
+                                                               'weights_epoch_' + str(epoch_n)
+                                                               +'_iter_' + str(i) + '.ckpt')))
 
+    network.save_weights(os.path.realpath(os.path.join(save_path_weights,
+                                                       'weights_epoch_'+str(epoch_n)+'_final.ckpt')))
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         path_ftos = './datasplits/fa_filepath_to_subject_colorferet.json'
@@ -170,8 +75,14 @@ if __name__ == '__main__':
     learning_rate = 0.001
     checkpoint = 128*49 
 
+    subj_for_training = ['00044', '00043']
+
+    stom_new={}
+    for s in subj_for_training:
+        stom_new[s] = stom[s]
+
     network = vggn.VGGFaceTrainForMEB(batch_size)
     network.load_vgg_weights(os.path.realpath('./vggface/weights/plain-vgg-trained.ckpt'))
 
     for i in xrange(1,10):
-        epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, i)
+        epoch(network, ftos, stom_new, batch_size, learning_rate, './training_mebs_two_subjects/', checkpoint, i)
