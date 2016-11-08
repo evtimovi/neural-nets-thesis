@@ -1,0 +1,303 @@
+no argument for filename to subject id map specified, using default: ./datasplits/fa_filepath_to_subject_colorferet.json
+no argument for subject id to meb code map specified, using default: ./datasplits/subjtomeb_colorferet.json
+trained batch 0 in epoch 1
+trained batch 1 in epoch 1
+trained batch 2 in epoch 1
+trained batch 3 in epoch 1
+trained batch 4 in epoch 1
+trained batch 5 in epoch 1
+trained batch 6 in epoch 1
+trained batch 7 in epoch 1
+trained batch 8 in epoch 1
+trained batch 9 in epoch 1
+trained batch 10 in epoch 1
+trained batch 11 in epoch 1
+trained batch 12 in epoch 1
+trained batch 13 in epoch 1
+trained batch 14 in epoch 1
+trained batch 15 in epoch 1
+trained batch 16 in epoch 1
+trained batch 17 in epoch 1
+trained batch 18 in epoch 1
+trained batch 19 in epoch 1
+trained batch 20 in epoch 1
+trained batch 21 in epoch 1
+trained batch 22 in epoch 1
+trained batch 23 in epoch 1
+trained batch 24 in epoch 1
+trained batch 25 in epoch 1
+trained batch 26 in epoch 1
+trained batch 27 in epoch 1
+trained batch 28 in epoch 1
+trained batch 29 in epoch 1
+trained batch 30 in epoch 1
+trained batch 31 in epoch 1
+trained batch 32 in epoch 1
+trained batch 33 in epoch 1
+trained batch 34 in epoch 1
+trained batch 35 in epoch 1
+trained batch 36 in epoch 1
+trained batch 37 in epoch 1
+trained batch 38 in epoch 1
+trained batch 39 in epoch 1
+trained batch 40 in epoch 1
+trained batch 41 in epoch 1
+trained batch 42 in epoch 1
+trained batch 43 in epoch 1
+trained batch 44 in epoch 1
+trained batch 45 in epoch 1
+trained batch 46 in epoch 1
+trained batch 47 in epoch 1
+trained batch 48 in epoch 1
+trained batch 49 in epoch 1
+trained batch 50 in epoch 1
+trained batch 51 in epoch 1
+trained batch 52 in epoch 1
+trained batch 53 in epoch 1
+trained batch 54 in epoch 1
+trained batch 55 in epoch 1
+trained batch 56 in epoch 1
+trained batch 57 in epoch 1
+trained batch 58 in epoch 1
+trained batch 59 in epoch 1
+trained batch 60 in epoch 1
+trained batch 61 in epoch 1
+trained batch 62 in epoch 1
+trained batch 63 in epoch 1
+trained batch 64 in epoch 1
+trained batch 65 in epoch 1
+trained batch 66 in epoch 1
+trained batch 67 in epoch 1
+trained batch 68 in epoch 1
+trained batch 69 in epoch 1
+trained batch 70 in epoch 1
+trained batch 71 in epoch 1
+trained batch 72 in epoch 1
+trained batch 73 in epoch 1
+trained batch 74 in epoch 1
+trained batch 75 in epoch 1
+trained batch 76 in epoch 1
+trained batch 77 in epoch 1
+trained batch 78 in epoch 1
+trained batch 79 in epoch 1
+trained batch 80 in epoch 1
+trained batch 81 in epoch 1
+trained batch 82 in epoch 1
+trained batch 83 in epoch 1
+trained batch 84 in epoch 1
+trained batch 85 in epoch 1
+trained batch 86 in epoch 1
+trained batch 87 in epoch 1
+trained batch 88 in epoch 1
+trained batch 89 in epoch 1
+trained batch 90 in epoch 1
+trained batch 91 in epoch 1
+trained batch 92 in epoch 1
+trained batch 93 in epoch 1
+trained batch 94 in epoch 1
+trained batch 95 in epoch 1
+trained batch 96 in epoch 1
+trained batch 97 in epoch 1
+trained batch 98 in epoch 1
+trained batch 99 in epoch 1
+trained batch 100 in epoch 1
+trained batch 101 in epoch 1
+trained batch 102 in epoch 1
+trained batch 103 in epoch 1
+trained batch 104 in epoch 1
+trained batch 105 in epoch 1
+trained batch 106 in epoch 1
+trained batch 107 in epoch 1
+trained batch 108 in epoch 1
+trained batch 109 in epoch 1
+trained batch 110 in epoch 1
+trained batch 111 in epoch 1
+trained batch 112 in epoch 1
+trained batch 113 in epoch 1
+trained batch 114 in epoch 1
+trained batch 115 in epoch 1
+trained batch 116 in epoch 1
+trained batch 117 in epoch 1
+trained batch 118 in epoch 1
+trained batch 119 in epoch 1
+trained batch 120 in epoch 1
+trained batch 121 in epoch 1
+trained batch 122 in epoch 1
+trained batch 123 in epoch 1
+trained batch 124 in epoch 1
+trained batch 125 in epoch 1
+trained batch 126 in epoch 1
+trained batch 127 in epoch 1
+trained batch 128 in epoch 1
+started evaluation at Tue Nov  8 11:16:51 2016 subject 00550 matches 0 in time 3.964569 current time: Tue Nov  8 11:18:01 2016
+subject 00850 matches 0 in time 3.936121 current time: Tue Nov  8 11:18:31 2016
+subject 00300 matches 0 in time 3.907753 current time: Tue Nov  8 11:20:23 2016
+subject 00450 matches 0 in time 3.933826 current time: Tue Nov  8 11:22:26 2016
+subject 00950 matches 0 in time 3.968765 current time: Tue Nov  8 11:26:09 2016
+subject 00600 matches 0 in time 3.945367 current time: Tue Nov  8 11:32:22 2016
+subject 00250 matches 0 in time 3.944522 current time: Tue Nov  8 11:32:49 2016
+subject 00900 matches 0 in time 3.971948 current time: Tue Nov  8 11:34:37 2016
+subject 00200 matches 0 in time 3.951935 current time: Tue Nov  8 11:36:40 2016
+subject 00050 matches 0 in time 3.933201 current time: Tue Nov  8 11:39:29 2016
+subject 00500 matches 0 in time 3.966091 current time: Tue Nov  8 11:40:00 2016
+subject 00150 matches 0 in time 3.966217 current time: Tue Nov  8 11:46:48 2016
+subject 00750 matches 0 in time 3.966228 current time: Tue Nov  8 11:48:43 2016
+subject 01000 matches 0 in time 3.980408 current time: Tue Nov  8 11:51:06 2016
+subject 00800 matches 0 in time 3.967326 current time: Tue Nov  8 11:54:45 2016
+subject 00650 matches 0 in time 3.993128 current time: Tue Nov  8 11:56:11 2016
+subject 00100 matches 0 in time 3.950026 current time: Tue Nov  8 11:58:38 2016
+subject 00400 matches 0 in time 3.99604 current time: Tue Nov  8 12:00:14 2016
+subject 00350 matches 0 in time 3.937191 current time: Tue Nov  8 12:10:58 2016
+subject 00700 matches 0 in time 3.942734 current time: Tue Nov  8 12:15:43 2016
+subject 00550 matches 0 in time 3.953809 current time: Tue Nov  8 12:19:18 2016
+subject 00200 matches 0 in time 3.944466 current time: Tue Nov  8 12:19:37 2016
+subject 00850 matches 0 in time 3.989398 current time: Tue Nov  8 12:19:53 2016
+subject 00300 matches 0 in time 3.913785 current time: Tue Nov  8 12:21:37 2016
+subject 00450 matches 0 in time 3.92672 current time: Tue Nov  8 12:23:51 2016
+subject 00950 matches 0 in time 3.971006 current time: Tue Nov  8 12:27:27 2016
+subject 00600 matches 0 in time 3.956869 current time: Tue Nov  8 12:33:41 2016
+subject 00350 matches 0 in time 3.951094 current time: Tue Nov  8 12:35:17 2016
+subject 00900 matches 0 in time 3.961059 current time: Tue Nov  8 12:35:52 2016
+subject 00400 matches 0 in time 3.949945 current time: Tue Nov  8 12:38:10 2016
+subject 00050 matches 0 in time 3.942855 current time: Tue Nov  8 12:41:07 2016
+subject 00500 matches 0 in time 3.970676 current time: Tue Nov  8 12:41:38 2016
+subject 00250 matches 0 in time 3.949153 current time: Tue Nov  8 12:49:52 2016
+subject 00750 matches 0 in time 3.972923 current time: Tue Nov  8 12:50:26 2016
+subject 01000 matches 0 in time 3.972172 current time: Tue Nov  8 12:52:53 2016
+subject 00150 matches 0 in time 3.977128 current time: Tue Nov  8 12:55:53 2016
+subject 00800 matches 0 in time 4.000214 current time: Tue Nov  8 12:56:24 2016
+subject 00650 matches 0 in time 3.957323 current time: Tue Nov  8 12:57:49 2016
+subject 00100 matches 0 in time 3.953734 current time: Tue Nov  8 13:00:11 2016
+subject 00700 matches 0 in time 3.935577 current time: Tue Nov  8 13:17:11 2016
+epoch 1 iteration 6272 EER: 0.0 GAR at 0 FAR 0.0
+finished at Tue Nov  8 13:19:35 2016
+trained batch 129 in epoch 1
+trained batch 130 in epoch 1
+trained batch 131 in epoch 1
+trained batch 132 in epoch 1
+trained batch 133 in epoch 1
+trained batch 134 in epoch 1
+trained batch 135 in epoch 1
+trained batch 136 in epoch 1
+trained batch 137 in epoch 1
+trained batch 138 in epoch 1
+trained batch 139 in epoch 1
+trained batch 140 in epoch 1
+trained batch 141 in epoch 1
+trained batch 142 in epoch 1
+trained batch 143 in epoch 1
+trained batch 144 in epoch 1
+trained batch 145 in epoch 1
+trained batch 146 in epoch 1
+trained batch 147 in epoch 1
+trained batch 148 in epoch 1
+trained batch 149 in epoch 1
+trained batch 150 in epoch 1
+trained batch 151 in epoch 1
+trained batch 152 in epoch 1
+trained batch 153 in epoch 1
+trained batch 154 in epoch 1
+trained batch 155 in epoch 1
+trained batch 156 in epoch 1
+trained batch 157 in epoch 1
+trained batch 158 in epoch 1
+trained batch 159 in epoch 1
+trained batch 160 in epoch 1
+trained batch 161 in epoch 1
+trained batch 162 in epoch 1
+trained batch 163 in epoch 1
+trained batch 164 in epoch 1
+trained batch 165 in epoch 1
+trained batch 166 in epoch 1
+trained batch 167 in epoch 1
+trained batch 168 in epoch 1
+trained batch 169 in epoch 1
+trained batch 170 in epoch 1
+trained batch 171 in epoch 1
+trained batch 172 in epoch 1
+trained batch 173 in epoch 1
+trained batch 174 in epoch 1
+trained batch 175 in epoch 1
+trained batch 176 in epoch 1
+trained batch 177 in epoch 1
+trained batch 178 in epoch 1
+trained batch 179 in epoch 1
+trained batch 180 in epoch 1
+trained batch 181 in epoch 1
+trained batch 182 in epoch 1
+trained batch 183 in epoch 1
+trained batch 184 in epoch 1
+trained batch 185 in epoch 1
+trained batch 186 in epoch 1
+trained batch 187 in epoch 1
+trained batch 188 in epoch 1
+trained batch 189 in epoch 1
+trained batch 190 in epoch 1
+trained batch 191 in epoch 1
+trained batch 192 in epoch 1
+trained batch 193 in epoch 1
+trained batch 194 in epoch 1
+trained batch 195 in epoch 1
+trained batch 196 in epoch 1
+trained batch 197 in epoch 1
+trained batch 198 in epoch 1
+trained batch 199 in epoch 1
+trained batch 200 in epoch 1
+trained batch 201 in epoch 1
+trained batch 202 in epoch 1
+trained batch 203 in epoch 1
+trained batch 204 in epoch 1
+trained batch 205 in epoch 1
+trained batch 206 in epoch 1
+trained batch 207 in epoch 1
+trained batch 208 in epoch 1
+trained batch 209 in epoch 1
+trained batch 210 in epoch 1
+trained batch 211 in epoch 1
+trained batch 212 in epoch 1
+trained batch 213 in epoch 1
+trained batch 214 in epoch 1
+trained batch 215 in epoch 1
+trained batch 216 in epoch 1
+trained batch 217 in epoch 1
+trained batch 218 in epoch 1
+trained batch 219 in epoch 1
+trained batch 220 in epoch 1
+trained batch 221 in epoch 1
+trained batch 222 in epoch 1
+trained batch 223 in epoch 1
+trained batch 224 in epoch 1
+trained batch 225 in epoch 1
+trained batch 226 in epoch 1
+trained batch 227 in epoch 1
+trained batch 228 in epoch 1
+trained batch 229 in epoch 1
+trained batch 230 in epoch 1
+trained batch 231 in epoch 1
+trained batch 232 in epoch 1
+trained batch 233 in epoch 1
+trained batch 234 in epoch 1
+trained batch 235 in epoch 1
+trained batch 236 in epoch 1
+trained batch 237 in epoch 1
+trained batch 238 in epoch 1
+trained batch 239 in epoch 1
+trained batch 240 in epoch 1
+trained batch 241 in epoch 1
+trained batch 242 in epoch 1
+trained batch 243 in epoch 1
+trained batch 244 in epoch 1
+trained batch 245 in epoch 1
+trained batch 246 in epoch 1
+trained batch 247 in epoch 1
+trained batch 248 in epoch 1
+trained batch 249 in epoch 1
+trained batch 250 in epoch 1
+trained batch 251 in epoch 1
+trained batch 252 in epoch 1
+trained batch 253 in epoch 1
+trained batch 254 in epoch 1
+trained batch 255 in epoch 1
+trained batch 256 in epoch 1
+started evaluation at Tue Nov  8 13:23:13 2016 subject 00550 matches 0 in time 4.000635 current time: Tue Nov  8 13:24:22 2016
+subject 00850 matches 0 in time 3.957537 current time: Tue Nov  8 13:24:53 2016
