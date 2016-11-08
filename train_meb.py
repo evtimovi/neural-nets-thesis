@@ -41,8 +41,12 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     match_scores=[]
     batch_size = network.batch_size
 
+    start_subj, end_subj = 0,0
+
     for s in subjects:
-#        start_subj = time.clock()
+        if int(s)%50 == 0:
+            start_subj = time.clock()
+
         subj_path = os.path.join(files_base, s)
 
         #skip those fb's that are not in the fa's
@@ -63,6 +67,14 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
             mebs = network.get_meb_for(batch, threshold)
             matches = matches + len(filter(lambda x: x==stom[s], mebs))
         match_scores.append(matches)
+
+        if int(s)%50 == 0:
+            end_subj = time.clock()
+            print 'subject', s, 'matches', matches,
+            print 'in time', (end_subj - start_subj),
+            print 'current time:', time.ctime()
+            sys.stdout.flush()
+
     return match_scores
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):
@@ -113,6 +125,7 @@ def epoch(network, ftos, stom, batch_size, learning_rate, checkpoint, epoch_n):
                                                                'training-meb-epoch-' + str(epoch_n)
                                                                +'-iter-' + str(i) + '.ckpt')))
             print 'started evaluation at', time.ctime(),
+            sys.stdout.flush()
             evaluate_network(network, stom, i, epoch_n)        
             print 'finished at', time.ctime()
     network.save_weights(os.path.realpath(os.path.join(WEIGHTS_BASE,
