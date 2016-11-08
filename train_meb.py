@@ -66,9 +66,10 @@ def get_matching_scores_distribution(network, stom, files_base, threshold=0.5):
     return match_scores
 
 def get_imposter_dist(network, stom, files_base, threshold=0.5):
-    mebs = stom.values()
-    subjects_shuffled = mebs[:]
+    subjects = stom.keys()
+    subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
+    mebs = stom.values()
     random_map = {}
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]

@@ -129,4 +129,4 @@ trained batch 125 in epoch 1
 trained batch 126 in epoch 1
 trained batch 127 in epoch 1
 trained batch 128 in epoch 1
-started evaluation at Mon Nov  7 17:22:24 2016
+started evaluation at Mon Nov  7 18:32:33 2016
