@@ -14,7 +14,7 @@ and train a neural network that maps faces to MEB codes
 (the MEB codes will be provided externally)
 '''
 class VGGFaceMEB(parent.VGGFace):
-    def __init__(self, batch_size, keysize=256):
+    def __init__(self, batch_size, keysize=256, max_checkpoints=20):
          # initialize everything in the parent
         super(VGGFaceMEB, self).__init__(batch_size)
 
@@ -31,7 +31,7 @@ class VGGFaceMEB(parent.VGGFace):
 
         self.sess.run(parent.tf.initialize_variables(filter(lambda x: x.name.startswith('linear_3'),parent.tf.all_variables())))
 
-        self.saver = parent.tf.train.Saver()
+        self.saver = parent.tf.train.Saver(max_to_keep=max_checkpoints)
         # restorer is for VGG variables only
         # saver is for all variables
         self.restorer = parent.tf.train.Saver(filter(lambda x: not x.name.startswith('linear_3'),parent.tf.all_variables()))
