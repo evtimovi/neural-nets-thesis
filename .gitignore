@@ -103,3 +103,5 @@ datasets/
 
 #weights stuff
 vggface/weights/*
+output/*
+training_mebs_two_subjects/*

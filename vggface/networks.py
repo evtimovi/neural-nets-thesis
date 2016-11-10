@@ -7,12 +7,13 @@ import parent
 # note that tensorflow is imported in parent as tf,
 # so it can be referred to as parent.tf
 
+
 '''
 This class inherits from the parent VGGFace to build 
 and train a neural network that maps faces to MEB codes
 (the MEB codes will be provided externally)
 '''
-class VGGFaceTrainForMEB(parent.VGGFace):
+class VGGFaceMEB(parent.VGGFace):
     def __init__(self, batch_size, keysize=256):
          # initialize everything in the parent
         super(VGGFaceTrainForMEB, self).__init__(batch_size)
@@ -46,6 +47,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
 
     def load_all_weights(self, path):
         self.saver.restore(self.sess, path)
+        self.weights_loaded = True
     
     def train_batch(self, inputs_arr, targets_arr,
                     learning_rate,
@@ -63,7 +65,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         Args:
             input_arr: a numpy array of all the inputs in the batch 
             targets_arr: a numpy array of the target meb codes
-                         (indices should match up between input_arr and targets_arr)
+                         (indices should match avg_euclidean_mean up between input_arr and targets_arr)
             learning_rate: the learning rate to be used during training
             all_layers: allows you to specify whether all layers
                         of the network should be trained or just the last one.
@@ -72,7 +74,7 @@ class VGGFaceTrainForMEB(parent.VGGFace):
             the cross entropy loss after training the batch
         '''
 
-        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(targets_arr * parent.tf.log(self.get_output()), reduction_indices=[1]))
+        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(self.target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
         
         if all_layers:
             train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
@@ -117,6 +119,13 @@ class VGGFaceTrainForMEB(parent.VGGFace):
         x_image = self.vars[0][1]
         output = self.get_output().eval(feed_dict={x_image:img})[0]
         return map(lambda x: 0 if x<threshold else 1, output)
+
+    def get_avg_euclidaen(self, inputs_arr, targets_arr):
+        euclidean_mean_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.sub(self.get_output(), self.target_code))))
+        _, avg_euclidean = self.sess.run([self.get_output(), euclidean_mean_op], 
+                                         feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
+        return avg_euclidean
+
 '''
 This class inherits from the paretn VGGFace to build a 
 vanilla VGGFace implementation meant only for evaluation.
