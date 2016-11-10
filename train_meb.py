@@ -50,10 +50,8 @@ if __name__ == '__main__':
     with open(os.path.realpath(PATH_STOM),'r') as f:
         stom = json.load(f)
 
-    subj_for_training = ['00044', '00043']
-
     stom_new={}
-    for s in subj_for_training:
+    for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
 
     network = vggn.VGGFaceMEB(BATCH_SIZE)
