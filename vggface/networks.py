@@ -16,7 +16,7 @@ and train a neural network that maps faces to MEB codes
 class VGGFaceMEB(parent.VGGFace):
     def __init__(self, batch_size, keysize=256):
          # initialize everything in the parent
-        super(VGGFaceTrainForMEB, self).__init__(batch_size)
+        super(VGGFaceMEB, self).__init__(batch_size)
 
         # append a linear layer of keysize neurons
         # for linear the syntax is:
