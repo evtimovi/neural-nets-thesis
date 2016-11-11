@@ -78,12 +78,6 @@ def get_avg_euclidean(network, stom):
         inputs_arr = map(lambda x: pimg.load_image_plain(os.path.join(subj_path,x)), sampled_files)
         targets_arr = [stom[s] for _ in xrange(EVAL_SAMPLE_SIZE)]
         subject_to_euclidean[s] = network.get_avg_euclid(inputs_arr, targets_arr)
-
-#        for i in xrange(0, len(all_files)):
-#            img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
-#            meb = network.get_raw_output_for(img)
-#            subject_to_trained_mebs[s].append(meb)
-
     return subject_to_euclidean
 
 #def get_genuine_distribution(true_stom, network_stom):
@@ -150,8 +144,7 @@ if __name__ == '__main__':
         print 'No path to weights specified. Exiting evaluation.'
         sys.exit(1)
 
-    weights_path = os.path.join(SAVE_FOLDER, 'weights')
-    checkpoint_files = filter(lambda x: len(x.split('.')) == 2 and x.split('.')[1] == 'ckpt', os.listdir(weights_path))
+    checkpoint_files = filter(lambda x: len(x.split('.')) == 2 and x.split('.')[1] == 'ckpt', os.listdir(path_to_weights))
     
     with open(os.path.realpath(PATH_FTOS), 'r') as f:
         ftos = json.load(f)
@@ -162,9 +155,9 @@ if __name__ == '__main__':
     stom_new={}
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
-
-    network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
     
+    network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
+
     for f in sorted(checkpoint_files):
         network.load_all_weights(os.path.join(path_to_weights, f))
         print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)
