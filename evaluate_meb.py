@@ -165,6 +165,6 @@ if __name__ == '__main__':
 
     network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
     
-    for f in checkpoint_files:
+    for f in sorted(checkpoint_files):
         network.load_all_weights(os.path.join(path_to_weights, f))
-        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom)
+        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)

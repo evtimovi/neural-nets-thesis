@@ -121,7 +121,7 @@ class VGGFaceMEB(parent.VGGFace):
         return map(lambda x: 0 if x<threshold else 1, output)
 
     def get_avg_euclid(self, inputs_arr, targets_arr):
-        euclidean_mean_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.sub(self.get_output(), self.target_code))))
+        euclidean_mean_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1)))
         _, avg_euclidean = self.sess.run([self.get_output(), euclidean_mean_op], 
                                          feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
         return avg_euclidean
