@@ -43,8 +43,9 @@ def load_crop_adjust(image_path, width=224, height=224):
     img2 = crop_to_face(img)
         
     img2 = img.astype(np.float32)
+
     #subtract the average so that all pixels are close to the average
-    img2 -= [129.1863,104.7624,93.5940]
+    #img2 -= [129.1863,104.7624,93.5940]
 
     # have to resize it here to comply with VGGFace specs
     img2 = cv2.resize(img2, (width, height))
