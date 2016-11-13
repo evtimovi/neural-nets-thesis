@@ -40,7 +40,15 @@ def get_raw_outputs(network, stom, files_base, sample_size, threshold=0.5):
             continue
 
         # only use these random images in the evaluation
-        all_files = random.SystemRandom().sample(os.listdir(subj_path), sample_size)
+        #all_files = random.SystemRandom().sample(os.listdir(subj_path), sample_size)
+        #all_files = sorted(os.listdir(subj_path))[:sample_size]
+
+        #only use every sample_size-th image in the evaluation 
+        #(should capture a nice variety of rotatins) 
+        all_files = []
+        listed_files = sorted(os.listdir(subj_path))
+        for f in xrange(0, len(listed_files), sample_size):
+            all_files.append(f)
 
         for i in xrange(0, len(all_files)):
             img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
