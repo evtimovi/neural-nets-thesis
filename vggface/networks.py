@@ -74,19 +74,22 @@ class VGGFaceMEB(parent.VGGFace):
             the cross entropy loss after training the batch
         '''
 
-        cross_entropy = parent.tf.reduce_mean(-parent.tf.reduce_sum(self.target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
+        #cross_entropy
+#        loss_op = parent.tf.reduce_mean(-parent.tf.reduce_sum(self.target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
+        #euclidean
+        loss_op = parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1))
         
         if all_layers:
-            train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
+            train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op)
         else:
             if not self.weights_loaded:
                 print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
             vars_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
-            train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy, var_list=vars_to_train)
+            train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op, var_list=vars_to_train)
 
         # vars at 0 holds the input placeholder in a tuple
         # the second entry in the tuple is the actual placeholder
-        _, loss = self.sess.run([train_step, cross_entropy],
+        _, loss = self.sess.run([train_step, loss_op],
                                  feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
         
         return loss
