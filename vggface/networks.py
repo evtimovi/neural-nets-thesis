@@ -75,9 +75,14 @@ class VGGFaceMEB(parent.VGGFace):
         '''
 
         #cross_entropy
-#        loss_op = parent.tf.reduce_mean(-parent.tf.reduce_sum(self.target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
+#original loss_op = parent.tf.reduce_mean(-parent.tf.reduce_sum(self.target_code * parent.tf.log(self.get_output()), reduction_indices=[1]))
+        y_target = self.target_code
+        y_output = self.get_output()
+        ce_1 = parent.tf.mul(y_target, parent.tf.log(y_output))
+        ce_2 = parent.tf.mul(parent.tf.sub(1.0, y_target), parent.tf.log(parent.tf.sub(1.0, y_output)))
+        loss_op = -parent.tf.reduce_mean(parent.tf.reduce_sum(parent.tf.add(ce_1, ce_2), 1))
         #euclidean
-        loss_op = parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1))
+#        loss_op = parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1))
         
         if all_layers:
             train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op)
