@@ -126,13 +126,13 @@ def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0
 def print_performance_measures(true_genuine, genuine_dist, 
                                true_imposter, imposter_dist,
                                weights_filename):
-    with open('true_genuine_' + weights_filename + '.json', 'a') as f:
+    with open(os.path.join(SAVE_PATH, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_genuine, f)
-    with open('genuine_dist_' + weights_filename + '.json', 'a') as f:
+    with open(os.path.join(SAVE_PATH, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(genuine_dist, f)
-    with open('true_impost_' + weights_filename + '.json', 'a') as f:
+    with open(os.path.join(SAVE_PATH, 'true_impost_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_imposter, f)
-    with open('imposter_dist_' + weights_filename + '.json', 'a') as f:
+    with open(os.path.join(SAVE_PATH, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(imposter_dist, f)
 
     all_true = true_genuine[:]
@@ -148,7 +148,7 @@ def evaluate_network(network, stom, weights_filename):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    total_vars_per_subject = len(genuine_distribution)
+    total_vars_per_subject = len(genuine_dist)
 
     true_genuine = [total_vars_per_subject for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
@@ -158,12 +158,7 @@ def evaluate_network(network, stom, weights_filename):
                                weights_filename)
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        path_to_weights = sys.argv[1]
-    else:
-        print 'No path to weights specified. Exiting evaluation.'
-        sys.exit(1)
-
+    path_to_weights = os.path.join(SAVE_PATH, path_to_weights)
     checkpoint_files = filter(lambda x: len(x.split('.')) == 2 and x.split('.')[1] == 'ckpt', os.listdir(path_to_weights))
     
     with open(os.path.realpath(PATH_FTOS), 'r') as f:
