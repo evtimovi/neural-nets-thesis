@@ -126,13 +126,13 @@ def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0
 def print_performance_measures(true_genuine, genuine_dist, 
                                true_imposter, imposter_dist,
                                weights_filename):
-    with open(os.path.join(SAVE_PATH, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(SAVE_FOLDER, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_genuine, f)
-    with open(os.path.join(SAVE_PATH, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(SAVE_FOLDER, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(genuine_dist, f)
-    with open(os.path.join(SAVE_PATH, 'true_impost_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(SAVE_FOLDER, 'true_impost_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_imposter, f)
-    with open(os.path.join(SAVE_PATH, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(SAVE_FOLDER, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(imposter_dist, f)
 
     all_true = true_genuine[:]
@@ -158,7 +158,7 @@ def evaluate_network(network, stom, weights_filename):
                                weights_filename)
 
 if __name__ == '__main__':
-    path_to_weights = os.path.join(SAVE_PATH, path_to_weights)
+    path_to_weights = os.path.join(SAVE_FOLDER, 'weights')
     checkpoint_files = filter(lambda x: len(x.split('.')) == 2 and x.split('.')[1] == 'ckpt', os.listdir(path_to_weights))
     
     with open(os.path.realpath(PATH_FTOS), 'r') as f:
