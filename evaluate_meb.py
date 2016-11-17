@@ -148,7 +148,7 @@ def evaluate_network(network, stom, weights_filename):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    total_vars_per_subject = len(genuine_dist)
+    total_vars_per_subject = 1568/EVAL_SAMPLE_SIZE
 
     true_genuine = [total_vars_per_subject for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
@@ -176,4 +176,4 @@ if __name__ == '__main__':
     for f in sorted(checkpoint_files):
         network.load_all_weights(os.path.join(path_to_weights, f))
 #        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)
-        evaluate_network(network, stom, f)
+        evaluate_network(network, stom_new, f)
