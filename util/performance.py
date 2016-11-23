@@ -102,7 +102,6 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
     cm = skmet.confusion_matrix(true, predicted, ['same', 'different'])
-    print '***********confusion matrix', cm, 'at threshold', threshold
     return cm.ravel()
 
 
@@ -235,17 +234,16 @@ def equal_error_rate(ground_truth, similarity):
     '''
     # compute the fmr and fnmr taking each possible
     # similarity measure as a threshold t
-    # sort the similarity measures along the way (might be redundant)
 
     map_fmr = np.vectorize(lambda t: fmr(ground_truth, similarity, t))
     map_fnmr = np.vectorize(lambda t: fnmr(ground_truth, similarity, t))
 
+    # filter the similarities to leave away the maximum
+    # possible similarity measure
+    # if you don't do this, there is a case when there are no negatives)
     sim_sorted = np.sort(similarity)
     max_sim = np.amax(similarity)
-    print '***********max similarity is', max_sim
-    print '***********sim sorted before filter', sim_sorted
     sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
-    print '***********sim sorted after filter', sim_sorted
 
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
@@ -388,7 +386,7 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
     fars = map_fars(sim_sorted)
     
     gars_at_zero=[]
-
+    print '*********** fars are', fars
     for i in xrange(len(fars)):
         if fars[i] == 0:
             gars_at_zero.append(gars[i])
