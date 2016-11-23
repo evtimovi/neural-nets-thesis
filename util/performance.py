@@ -8,6 +8,7 @@ standard machine learning matrics and others are particular
 to biometric authetication.
 '''
 
+
 def distribution(values, density=False, each_unique_in_bucket=False):
     '''
     This method returns a "histogram" representing the distribution
@@ -375,14 +376,16 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
     Return:
         the larges GAR at 0 FAR 
     '''
+
+    sim_sorted = np.sort(similarity)
     max_sim = np.amax(similarity)
-    similarity = filter(lambda x: x != max_sim, similarity)
+    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
  
     map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
     map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
 
-    gars = map_gars(similarity)
-    fars = map_fars(similarity)
+    gars = map_gars(sim_sorted)
+    fars = map_fars(sim_sorted)
     
     gars_at_zero=[]
 

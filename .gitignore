@@ -105,3 +105,6 @@ datasets/
 vggface/weights/*
 output/*
 training_mebs_two_subjects/*
+
+#pycharm stuff
+.idea/*
