@@ -1,14 +1,13 @@
 from util import performance as perf
 from util import processimgs as pimg
-import numpy as np
 import json
-import cv2
-import sys
+import matplotlib.pyplot as plt
 import os
 import random
 from vggface import networks as vggn
 
 execfile('train_params.py')
+
 
 def get_avg_euclidean(network, stom):
     '''
@@ -40,6 +39,17 @@ def get_avg_euclidean(network, stom):
         targets_arr = [stom[s] for _ in xrange(EVAL_SAMPLE_SIZE)]
         subject_to_euclidean[s] = network.get_avg_euclid(inputs_arr, targets_arr)
     return subject_to_euclidean
+
+
+def histogram(genuine_dist, imposter_dist, title):
+    plt.hist(genuine_dist, label='genuine')
+    plt.hist(imposter_dist, label='imposter')
+    plt.xlabel('num of matches')
+    plt.ylabel('num of occurences')
+    plt.title('Genuine and imposter distributions for ' + title)
+    plt.legend()
+    plt.savefig(os.path.join(SAVE_FOLDER, 'histogram_' + title))
+
 
 def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5):
     '''
@@ -109,6 +119,7 @@ def get_matches_distribution(true_stom, network_stom):
 
     return match_scores
 
+
 def get_imposter_distribution(network, stom, files_base, sample_size, threshold=0.5):
     subjects = stom.keys()
     subjects_shuffled = subjects[:]
@@ -118,6 +129,7 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
     return get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
+
 
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
     return get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
@@ -151,12 +163,14 @@ def print_performance_measures(true_genuine, genuine_dist,
     with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
         json.dump(all_dist, f)
 
+    histogram(genuine_dist, imposter_dist, weights_filename)
+
     print weights_filename,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
     print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
+
 def evaluate_network(network, stom, weights_filename):
-#    total_vars_per_subject = EVAL_SAMPLE_SIZE #196 #1568
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 

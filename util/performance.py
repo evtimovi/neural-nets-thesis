@@ -43,12 +43,12 @@ def distribution(values, density=False, each_unique_in_bucket=False):
         than x_values.
     '''
     if each_unique_in_bucket:
-        num_of_measures = len(similarity_measures)
+        num_of_measures = len(values)
         
         # unique_counts returns the number of times each of the 
         # unique_values comes up in the original array
-        unique_values, unique_counts = np.unique(similarity_measures,
-                                            return_counts=True)
+        unique_values, unique_counts = np.unique(values,
+                                                 return_counts=True)
         
         if density:
             # make_frequencies will be a vectorized function
@@ -56,7 +56,7 @@ def distribution(values, density=False, each_unique_in_bucket=False):
             # will be evaluated element-wise
             make_frequencies = np.vectorize(lambda x: x/num_of_measures)
             frequencies = make_frequencies(unique_counts)
-            return (unique_values, frequencies)
+            return unique_values, frequencies
         else:
             return unique_values, unique_counts
 
