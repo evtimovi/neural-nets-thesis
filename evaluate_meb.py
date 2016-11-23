@@ -42,13 +42,16 @@ def get_avg_euclidean(network, stom):
 
 
 def histogram(genuine_dist, imposter_dist, title):
-    plt.hist(genuine_dist, label='genuine')
-    plt.hist(imposter_dist, label='imposter')
+    total_vars_per_subject = 1568/EVAL_SAMPLE_SIZE
+    bins = range(total_vars_per_subject)
+    plt.hist(genuine_dist, bins=bins, label='genuine')
+    plt.hist(imposter_dist, bins=bins, label='imposter')
     plt.xlabel('num of matches')
     plt.ylabel('num of occurences')
     plt.title('Genuine and imposter distributions for ' + title)
     plt.legend()
-    plt.savefig(os.path.join(SAVE_FOLDER, 'histogram_' + title))
+    plt.savefig(os.path.join(SAVE_FOLDER, 'histogram_' + title + '.png'))
+    plt.clf()
 
 
 def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5):
@@ -163,11 +166,13 @@ def print_performance_measures(true_genuine, genuine_dist,
     with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
         json.dump(all_dist, f)
 
+
     histogram(genuine_dist, imposter_dist, weights_filename)
+    print 'histogram saved for', weights_filename
 
     print weights_filename,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
-    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
+#    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
 
 def evaluate_network(network, stom, weights_filename):
