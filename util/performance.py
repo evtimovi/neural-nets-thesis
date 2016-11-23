@@ -99,7 +99,9 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
-    return skmet.confusion_matrix(true, predicted).ravel()
+    cm = skmet.confusion_matrix(true, predicted, ['same', 'different'])
+    print '***********confusion matrix', cm, 'at threshold', threshold
+    return cm.ravel()
  
 def fnmr(ground_truth, similarity, threshold):
     '''
@@ -129,7 +131,8 @@ def fnmr(ground_truth, similarity, threshold):
     Returns:
         a float indicating the FNMR rate
     '''
-    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
+    tn, fp, fn, tp = bfm
     return float(fn)/(float(tp)+float(fn))
 
 def fmr(ground_truth, similarity, threshold):
@@ -160,7 +163,9 @@ def fmr(ground_truth, similarity, threshold):
     Returns:
         a float indicating the FMR rate
     '''
-    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
+    tn, fp, fn, tp = bfm
+    #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
     return float(fp)/(float(tn)+float(fp))
 
 def gar(ground_truth, similarity, threshold):
@@ -191,7 +196,10 @@ def gar(ground_truth, similarity, threshold):
     Returns:
         a float indicating the GAR rate
     '''
-    tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
+    bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
+    tn, fp, fn, tp = bfm
+
+    #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
     return float(tp)/(float(tp)+float(fn))
 
 def equal_error_rate(ground_truth, similarity):
@@ -222,19 +230,24 @@ def equal_error_rate(ground_truth, similarity):
     # compute the fmr and fnmr taking each possible
     # similarity measure as a threshold t
     # sort the similarity measures along the way (might be redundant)
+
     map_fmr = np.vectorize(lambda t: fmr(ground_truth, similarity, t))
     map_fnmr = np.vectorize(lambda t: fnmr(ground_truth, similarity, t))
+
     sim_sorted = np.sort(similarity)
+    max_sim = np.amax(similarity)
+    print '***********max similarity is', max_sim
+    print '***********sim sorted before filter', sim_sorted
+    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
+    print '***********sim sorted after filter', sim_sorted
+
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
     
-    #print 'fmrs', fmrs
-    #print 'fnmrs', fnmrs
     # find all differences between fnmr and fmr
     # and return the minimum
     map_diff = np.vectorize(lambda x,y: abs(x-y))
     diffs = map_diff(fmrs,fnmrs)
-    #print diffs
     return fmrs[list(diffs).index(np.amin(diffs))]
 
 def equal_error_rate_from_distributions(genuine, imposter, step=0.01, tolerance=0.01):
@@ -379,6 +392,9 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
     Return:
         the larges GAR at 0 FAR 
     '''
+    max_sim = np.amax(similarity)
+    similarity = filter(lambda x: x != max_sim, similarity)
+ 
     map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
     map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
 

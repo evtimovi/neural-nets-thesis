@@ -126,19 +126,31 @@ def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0
 def print_performance_measures(true_genuine, genuine_dist, 
                                true_imposter, imposter_dist,
                                weights_filename):
-    with open(os.path.join(SAVE_FOLDER, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
+    dist_path = os.path.join(SAVE_FOLDER, 'dist')
+
+    if not os.path.exists(dist_path):
+        os.mkdir(dist_path)
+
+    with open(os.path.join(dist_path, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_genuine, f)
-    with open(os.path.join(SAVE_FOLDER, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(dist_path, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(genuine_dist, f)
-    with open(os.path.join(SAVE_FOLDER, 'true_impost_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(dist_path, 'true_impost_' + weights_filename + '.json'), 'a') as f:
         json.dump(true_imposter, f)
-    with open(os.path.join(SAVE_FOLDER, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
+    with open(os.path.join(dist_path, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
         json.dump(imposter_dist, f)
 
     all_true = true_genuine[:]
     all_dist = genuine_dist[:]
     all_true.extend(true_imposter)
     all_dist.extend(imposter_dist)
+
+    with open(os.path.join(dist_path, 'true_all_' + weights_filename + '.json'), 'w') as f:
+        json.dump(all_true, f)
+
+    with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
+        json.dump(all_dist, f)
+
     print weights_filename,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
     print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
