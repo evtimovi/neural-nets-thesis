@@ -63,6 +63,7 @@ def distribution(values, density=False, each_unique_in_bucket=False):
         y_values, x_borders = np.histogram(values, bins='auto', density=density)
         return x_borders, y_values
 
+
 def binary_confusion_matrix(ground_truth, similarity, threshold):
     '''
     Uses the threshold when applied to similarity to construct
@@ -102,7 +103,8 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     cm = skmet.confusion_matrix(true, predicted, ['same', 'different'])
     print '***********confusion matrix', cm, 'at threshold', threshold
     return cm.ravel()
- 
+
+
 def fnmr(ground_truth, similarity, threshold):
     '''
     Calculates the False Non-match Rate (False Reject Rate)
@@ -134,6 +136,7 @@ def fnmr(ground_truth, similarity, threshold):
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
     return float(fn)/(float(tp)+float(fn))
+
 
 def fmr(ground_truth, similarity, threshold):
     '''
@@ -168,6 +171,7 @@ def fmr(ground_truth, similarity, threshold):
     #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
     return float(fp)/(float(tn)+float(fp))
 
+
 def gar(ground_truth, similarity, threshold):
     '''
     Calculates the Genuine Accept Rate (True Accept Rate)
@@ -201,6 +205,7 @@ def gar(ground_truth, similarity, threshold):
 
     #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
     return float(tp)/(float(tp)+float(fn))
+
 
 def equal_error_rate(ground_truth, similarity):
     '''
@@ -250,31 +255,6 @@ def equal_error_rate(ground_truth, similarity):
     diffs = map_diff(fmrs,fnmrs)
     return fmrs[list(diffs).index(np.amin(diffs))]
 
-def equal_error_rate_from_distributions(genuine, imposter, step=0.01, tolerance=0.01):
-    '''
-    Calculates the equal error rate by computing FMR and FNMR rates 
-    from the genuine and imposter distributions provided
-    by varying the threshold in steps of step.
-    "Equal" here is defined to mean within a difference of "threshold"
-
-    Args:
-        genuine: the genuine distribution in (x_values, y_values) tuple format
-        imposter: the imposter distribution in (x_values, y_values) tuple format
-        step: how to vary the threshold at each step (default: 0.01)
-        tolerance: defines maximum difference between two numbers
-                   for them to be termed "equal" (default: 0.01)
-
-    Returns:
-        the FMR when the threshold is such that FMR=FNMR (within threshold)
-
-    '''
-    for t in range(0, np.amax(similarity), step):
-        fmr = fmr_from_distributions(genuine, imposter, t)
-        fnmr = fnmr_from_distributions(genuine, imposter, t)
-        if (abs(fmr-fnmr) < tolerance):
-            return fmr
-
-    raise Exception("No fmr=fnmr found within tolerance of " + tolerance)
 
 def roc_curve(ground_truth, similarity):
     '''
@@ -301,6 +281,7 @@ def roc_curve(ground_truth, similarity):
     x_values, y_values, thresholds = skmet.roc_curve(ground_truth, similarity)
     return x_values, y_values
 
+
 def roc_auc_score(ground_truth, similarities):
     '''
     Finds the AUC score from the ROC curve that can be generated from these
@@ -324,6 +305,7 @@ def roc_auc_score(ground_truth, similarities):
         the ROC AUC score
     '''
     return skmet.roc_auc_score(ground_truth, similarities)
+
 
 def gar_at_zero_far_from_roc_curve(ground_truth, similarity):
     '''
@@ -361,6 +343,7 @@ def gar_at_zero_far_from_roc_curve(ground_truth, similarity):
         i += 1
     
     return gar_values[i]
+
 
 def gar_at_zero_far_by_iterating(ground_truth, similarity):
     '''
