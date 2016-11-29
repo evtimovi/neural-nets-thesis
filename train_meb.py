@@ -55,7 +55,7 @@ if __name__ == '__main__':
         stom_new[s] = stom[s]
 
     network = vggn.VGGFaceMEB(BATCH_SIZE)
-    network.load_vgg_weights(os.path.realpath(VGG_WEIGHTS_PATH))
+    network.load_all_weights(os.path.realpath(VGG_WEIGHTS_PATH))
 
     for i in xrange(0,EPOCHS):
         epoch(network, ftos, stom_new, i)
