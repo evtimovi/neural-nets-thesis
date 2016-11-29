@@ -77,6 +77,8 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
                       the ground_truth values of the pairs at each index.
                       The index of a pair here must be the same as the 
                       index of the same pair in similarity.
+                      Major assumption: the ground truth labels are binary. 
+                      If not, an exception is raised.
         similarity: an array of values with bigger values representing "more similar"
                     and smaller values representing "more different". These are the similarity
                     measures obtained by the classifier.
@@ -91,17 +93,25 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
         a 4-way tuple representing tn, fp, fn, tp
 
     '''
-    # force both ground_truth and similarity into classes based on threshold
-    # assuming that this won't affect ground_truth
-    # the labels "same" and "different" don't really matter;
-    # I just call them that for convenience
-    cutoff = np.vectorize(lambda x: "same" if x > threshold else "different")
-    true = cutoff(ground_truth)
+    # the assumption here is that ground_truth is binary
+    # with the max value representing 'same' and the min value representing 'different'
+    # the previous assumption that ground_truth won't be affected
+    # if the cut-off was applied to it was wrong - 
+    # that forced the entire ground truth into one class even when there were two of them
+    # when the threshold was the maximum possible
+
+    if len(np.unique(ground_truth)) != 2:
+        raise Exception("ground truth must be binary") 
+
+    same = np.amax(ground_truth)
+    different = np.amin(ground_truth)
+    cutoff = np.vectorize(lambda x: same if x > threshold else different)
     predicted = cutoff(similarity)
+
     
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
-    cm = skmet.confusion_matrix(true, predicted, ['same', 'different'])
+    cm = skmet.confusion_matrix(ground_truth, predicted, [same,different])
     return cm.ravel()
 
 
@@ -241,9 +251,9 @@ def equal_error_rate(ground_truth, similarity):
     # filter the similarities to leave away the maximum
     # possible similarity measure
     # if you don't do this, there is a case when there are no negatives)
-    sim_sorted = np.sort(similarity)
-    max_sim = np.amax(similarity)
-    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
+    sim_sorted = np.unique(similarity)
+#    max_sim = np.amax(similarity)
+#    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
 
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
@@ -351,8 +361,6 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
     given the scores in ground_truth and similarity.
     This method generates the GAR at 0 FAR by iterating through the 
     array of similarity measurements.
-    Because there might be multiple instances when FAR = 0, 
-    a tuple of the max and the min GAR when FAR = 0 is returned.
     Args:
         ground_truth: an array of values with bigger values 
                       representing "more similar"
@@ -369,26 +377,22 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
                     (because the convention of similar/different is reversed).
                     The index of a pair here must be the same as the 
                     index of the same pair in ground_truth.
-
-
     Return:
-        the larges GAR at 0 FAR 
+        the largest GAR at 0 FAR 
     '''
 
-    sim_sorted = np.sort(similarity)
-    max_sim = np.amax(similarity)
-    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
+
+    sim_sorted = np.unique(similarity)
  
     map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
     map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
 
     gars = map_gars(sim_sorted)
     fars = map_fars(sim_sorted)
-    
+
     gars_at_zero=[]
-    print '*********** fars are', fars
     for i in xrange(len(fars)):
         if fars[i] == 0:
             gars_at_zero.append(gars[i])
 
-    return max(gars_at_zero)
+    return max(gars_at_zero) if len(gars_at_zero) > 0 else None
