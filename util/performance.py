@@ -105,14 +105,33 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
 
     same = np.amax(ground_truth)
     different = np.amin(ground_truth)
-    cutoff = np.vectorize(lambda x: same if x > threshold else different)
+    cutoff = np.vectorize(lambda x: same if x >= threshold else different)
     predicted = cutoff(similarity)
-
+#    print '**********scores', predicted
     
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
+    
+    for i in xrange(len(predicted)):
+        if predicted[i] == same and ground_truth[i] == same:
+            tp = tp + 1
+        elif predicted[i] == same and ground_truth[i] == different:
+            fp = fp + 1
+        elif predicted[i] == different and ground_truth[i] == same:
+            fn = fn + 1
+        elif predicted[i] == different and ground_truth[i] == different:
+            tn = tn + 1
+
+    if (tp+fp+tn+fn) != len(predicted):
+        raise Exception("confusion matrix entries don't add up")
+
+    return tn, fp, fn, tp
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
-    cm = skmet.confusion_matrix(ground_truth, predicted, [same,different])
-    return cm.ravel()
+#    cm = skmet.confusion_matrix(ground_truth, predicted, [same,different])
+#    return cm.ravel()
 
 
 def fnmr(ground_truth, similarity, threshold):
@@ -178,8 +197,10 @@ def fmr(ground_truth, similarity, threshold):
     '''
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
-    #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
-    return float(fp)/(float(tn)+float(fp))
+#    print '*******at threshold', threshold, 'tp=', tp, 'fp=', fp, 'fn=', fn, 'tn=', tn
+    fmr = float(fp)/(float(tn)+float(fp))
+#    print 'fmr', fmr
+    return fmr
 
 
 def gar(ground_truth, similarity, threshold):
@@ -389,6 +410,8 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
 
     gars = map_gars(sim_sorted)
     fars = map_fars(sim_sorted)
+
+#    print '*******fars', fars, 'given thresholds', sim_sorted
 
     gars_at_zero=[]
     for i in xrange(len(fars)):
