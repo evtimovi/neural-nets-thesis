@@ -42,8 +42,7 @@ def get_avg_euclidean(network, stom):
 
 
 def histogram(genuine_dist, imposter_dist, title):
-    total_vars_per_subject = 1568/EVAL_SAMPLE_SIZE
-    bins = range(total_vars_per_subject)
+    bins = range(1, EVAL_SAMPLE_SIZE, 7)
     plt.hist(genuine_dist, bins=bins, label='genuine')
     plt.hist(imposter_dist, bins=bins, label='imposter')
     plt.xlabel('num of matches')
@@ -82,16 +81,17 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
         #skip those fb's that are not in the fa's (i.e. in the stom dictionary)
         if not os.path.exists(subj_path):
             continue
-
-        # only use these random images in the evaluation
-        #all_files = random.SystemRandom().sample(os.listdir(subj_path), sample_size)
-        #all_files = sorted(os.listdir(subj_path))[:sample_size]
+        
 
         #only use every sample_size-th image in the evaluation 
         #(should capture a nice variety of rotatins) 
         all_files = []
         listed_files = sorted(os.listdir(subj_path))
-        for f in xrange(0, len(listed_files), sample_size):
+
+        total = len(listed_files)
+        step = total/sample_size
+
+        for f in xrange(0, len(listed_files), step):
             all_files.append(listed_files[f])
 
         for i in xrange(0, len(all_files)):
@@ -172,16 +172,14 @@ def print_performance_measures(true_genuine, genuine_dist,
 
     print weights_filename,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
-#    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
+    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
 
 def evaluate_network(network, stom, weights_filename):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    total_vars_per_subject = 1568/EVAL_SAMPLE_SIZE
-
-    true_genuine = [total_vars_per_subject for _ in xrange(len(genuine_dist))]
+    true_genuine = [EVAL_SAMPLE_SIZE for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
 
     print_performance_measures(true_genuine, genuine_dist,
