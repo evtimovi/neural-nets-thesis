@@ -4,6 +4,7 @@ import json
 import matplotlib.pyplot as plt
 import os
 import random
+import sys
 from vggface import networks as vggn
 
 execfile('train_params.py')
@@ -42,9 +43,9 @@ def get_avg_euclidean(network, stom):
 
 
 def histogram(genuine_dist, imposter_dist, title):
-    bins = range(1, EVAL_SAMPLE_SIZE, 7)
-    plt.hist(genuine_dist, bins=bins, label='genuine')
-    plt.hist(imposter_dist, bins=bins, label='imposter')
+#    bins = range(0, EVAL_SAMPLE_SIZE, 7)
+    plt.hist(genuine_dist, label='genuine')
+    plt.hist(imposter_dist, label='imposter')
     plt.xlabel('num of matches')
     plt.ylabel('num of occurences')
     plt.title('Genuine and imposter distributions for ' + title)
@@ -127,15 +128,18 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects = stom.keys()
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
+    print 'subjects used in imposter', subjects_shuffled
     mebs = stom.values()
     random_map = {}
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
-    return get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
+    matches = get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
+    return map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
 
 
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
-    return get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
+    matches = get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
+    return map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
 
 
 def print_performance_measures(true_genuine, genuine_dist, 
@@ -146,40 +150,31 @@ def print_performance_measures(true_genuine, genuine_dist,
     if not os.path.exists(dist_path):
         os.mkdir(dist_path)
 
-    with open(os.path.join(dist_path, 'true_genuine_' + weights_filename + '.json'), 'a') as f:
-        json.dump(true_genuine, f)
-    with open(os.path.join(dist_path, 'genuine_dist_' + weights_filename + '.json'), 'a') as f:
-        json.dump(genuine_dist, f)
-    with open(os.path.join(dist_path, 'true_impost_' + weights_filename + '.json'), 'a') as f:
-        json.dump(true_imposter, f)
-    with open(os.path.join(dist_path, 'imposter_dist_' + weights_filename + '.json'), 'a') as f:
-        json.dump(imposter_dist, f)
-
     all_true = true_genuine[:]
     all_dist = genuine_dist[:]
     all_true.extend(true_imposter)
     all_dist.extend(imposter_dist)
 
-    with open(os.path.join(dist_path, 'true_all_' + weights_filename + '.json'), 'w') as f:
-        json.dump(all_true, f)
+#    with open(os.path.join(dist_path, 'true_all_' + weights_filename + '.json'), 'w') as f:
+#        json.dump(all_true, f)
 
-    with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
-        json.dump(all_dist, f)
+#    with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
+#        json.dump(all_dist, f)
 
-
-    histogram(genuine_dist, imposter_dist, weights_filename)
-    print 'histogram saved for', weights_filename
+#    histogram(genuine_dist, imposter_dist, weights_filename)
+#    print 'histogram saved for', weights_filename
 
     print weights_filename,
     print 'EER:', perf.equal_error_rate(all_true, all_dist),
     print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
+    sys.stdout.flush()
 
 
 def evaluate_network(network, stom, weights_filename):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    true_genuine = [EVAL_SAMPLE_SIZE for _ in xrange(len(genuine_dist))]
+    true_genuine = [1 for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
 
     print_performance_measures(true_genuine, genuine_dist,
@@ -201,8 +196,14 @@ if __name__ == '__main__':
         stom_new[s] = stom[s]
     
     network = vggn.VGGFaceMEB(1)
-
-    for f in sorted(checkpoint_files):
+    f = sorted(checkpoint_files)[0]
+    for i in xrange(10):
+        print 'starting run', i,
+        sys.stdout.flush()
         network.load_all_weights(os.path.join(path_to_weights, f))
-#        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)
         evaluate_network(network, stom_new, f)
+
+#    for f in sorted(checkpoint_files):
+#        network.load_all_weights(os.path.join(path_to_weights, f))
+#        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)
+#        evaluate_network(network, stom_new, f)

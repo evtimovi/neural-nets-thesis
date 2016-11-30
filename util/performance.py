@@ -107,7 +107,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     different = np.amin(ground_truth)
     cutoff = np.vectorize(lambda x: same if x >= threshold else different)
     predicted = cutoff(similarity)
-#    print '**********scores', predicted
+    print '**********scores at threshold', threshold, predicted
     
     tp = 0
     fp = 0
@@ -127,6 +127,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     if (tp+fp+tn+fn) != len(predicted):
         raise Exception("confusion matrix entries don't add up")
 
+    print '**********tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn
     return tn, fp, fn, tp
     # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
     # for details on confusion matrix usage
@@ -278,6 +279,9 @@ def equal_error_rate(ground_truth, similarity):
 
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
+
+#    print 'fmrs', fmrs
+#    print 'fnmrs', fnmrs
     
     # find all differences between fnmr and fmr
     # and return the minimum
