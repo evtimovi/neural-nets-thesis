@@ -195,5 +195,5 @@ if __name__ == '__main__':
             eer, gar = evaluate_network(network, stom_new, f)
             eers.append(eer)
             gars.append(gar)
-       print 'eers', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
-       print 'gars', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
+        print 'eers', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
+        print 'gars', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
