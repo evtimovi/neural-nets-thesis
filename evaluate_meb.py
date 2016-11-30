@@ -142,9 +142,8 @@ def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0
     return map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
 
 
-def print_performance_measures(true_genuine, genuine_dist, 
-                               true_imposter, imposter_dist,
-                               weights_filename):
+def get_performance_measures(true_genuine, genuine_dist, 
+                             true_imposter, imposter_dist):
     dist_path = os.path.join(SAVE_FOLDER, 'dist')
 
     if not os.path.exists(dist_path):
@@ -155,19 +154,10 @@ def print_performance_measures(true_genuine, genuine_dist,
     all_true.extend(true_imposter)
     all_dist.extend(imposter_dist)
 
-#    with open(os.path.join(dist_path, 'true_all_' + weights_filename + '.json'), 'w') as f:
-#        json.dump(all_true, f)
+    eer = perf.equal_error_rate(all_true, all_dist),
+    gar = perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
-#    with open(os.path.join(dist_path, 'dist_all' + weights_filename + '.json'), 'w') as f:
-#        json.dump(all_dist, f)
-
-#    histogram(genuine_dist, imposter_dist, weights_filename)
-#    print 'histogram saved for', weights_filename
-
-    print weights_filename,
-    print 'EER:', perf.equal_error_rate(all_true, all_dist),
-    print 'GAR at 0 FAR', perf.gar_at_zero_far_by_iterating(all_true, all_dist)
-    sys.stdout.flush()
+    return (eer, gar)
 
 
 def evaluate_network(network, stom, weights_filename):
@@ -177,9 +167,8 @@ def evaluate_network(network, stom, weights_filename):
     true_genuine = [1 for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
 
-    print_performance_measures(true_genuine, genuine_dist,
-                               true_imposter, imposter_dist,
-                               weights_filename)
+    return get_performance_measures(true_genuine, genuine_dist,
+                               true_imposter, imposter_dist)
 
 if __name__ == '__main__':
     path_to_weights = os.path.join(SAVE_FOLDER, 'weights')
@@ -196,14 +185,15 @@ if __name__ == '__main__':
         stom_new[s] = stom[s]
     
     network = vggn.VGGFaceMEB(1)
-    f = sorted(checkpoint_files)[0]
-    for i in xrange(10):
-        print 'starting run', i,
-        sys.stdout.flush()
-        network.load_all_weights(os.path.join(path_to_weights, f))
-        evaluate_network(network, stom_new, f)
 
-#    for f in sorted(checkpoint_files):
-#        network.load_all_weights(os.path.join(path_to_weights, f))
-#        print f, 'avg Euclidean distance:', get_avg_euclidean(network, stom_new)
-#        evaluate_network(network, stom_new, f)
+    for f in sorted(checkpoint_files):
+        network.load_all_weights(os.path.join(path_to_weights, f))
+        eers = []
+        gars = []
+        print 'evaluating', f
+        for i in xrange(15):
+            eer, gar = evaluate_network(network, stom_new, f)
+            eers.append(eer)
+            gars.append(gar)
+       print 'eers', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
+       print 'gars', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
