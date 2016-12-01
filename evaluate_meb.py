@@ -83,23 +83,17 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
         #skip those fb's that are not in the fa's (i.e. in the stom dictionary)
         if not os.path.exists(subj_path):
             continue
-        
-
-        #only use every sample_size-th image in the evaluation 
-        #(should capture a nice variety of rotatins) 
         all_files = []
-        listed_files = sorted(os.listdir(subj_path))
 
+        listed_files = sorted(os.listdir(subj_path))
         total = len(listed_files)
         step = total/sample_size
-
         for f in xrange(0, len(listed_files), step):
             all_files.append(listed_files[f])
-
-        imgs = map(lambda x: pimg.load_image_plain(os.path.join(subj_path, x)), all_files)
-        mebs = network.get_meb_for(imgs, threshold)
-        subject_to_trained_mebs[s] = mebs
-
+        for i in xrange(0, len(all_files)):
+            img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
+            meb = network.get_raw_output_for([img,])
+            subject_to_trained_mebs[s].append(map(lambda x: 1 if x > threshold else 0, meb))
     return subject_to_trained_mebs
 
 
@@ -128,16 +122,20 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects = stom.keys()
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
+
     print '*subjects used as imposters*'
     print ' '.join(subjects_shuffled)
+
     mebs = stom.values()
     random_map = {}
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
     matches = get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
     matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
+
     print '*raw matching scores for those subjects*'
     print ' '.join(map(lambda x: str(x), matches))
+    
     return matches
 
 
@@ -193,7 +191,7 @@ if __name__ == '__main__':
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
     
-    network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
+    network = vggn.VGGFaceMEB(1)
 
     for f in sorted(checkpoint_files)[::-1]:
         network.load_all_weights(os.path.join(path_to_weights, f))
