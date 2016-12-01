@@ -142,7 +142,7 @@ def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0
     matches = get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
     matches =  map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
     print '*subjects*used*as*genuines*', ' '. join(stom.keys())
-    print '*raw matching scores for genuines*', ' '. join(map(lambda x: str(x), matches)) 
+    print '*raw*matching*scores*for*genuines*', ' '. join(map(lambda x: str(x), matches)) 
     return matches
 
 
