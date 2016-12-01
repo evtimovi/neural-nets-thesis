@@ -130,7 +130,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     if (tp+fp+tn+fn) != len(predicted):
         raise Exception("confusion matrix entries don't add up")
 
-    print 'tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn
+    print '*matrix*', 'tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn
     return tn, fp, fn, tp
 
 
