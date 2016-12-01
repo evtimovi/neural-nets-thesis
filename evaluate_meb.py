@@ -95,10 +95,9 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
         for f in xrange(0, len(listed_files), step):
             all_files.append(listed_files[f])
 
-        for i in xrange(0, len(all_files)):
-            img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
-            meb = network.get_raw_output_for([img,])
-            subject_to_trained_mebs[s].append(map(lambda x: 1 if x > threshold else 0, meb))
+        imgs = map(lambda x: pimg.load_image_plain(os.path.join(subj_path, x)), all_files)
+        mebs = network.get_meb_for(imgs, threshold)
+        subject_to_trained_mebs[s] = mebs
 
     return subject_to_trained_mebs
 
@@ -154,7 +153,7 @@ def get_performance_measures(true_genuine, genuine_dist,
     all_true.extend(true_imposter)
     all_dist.extend(imposter_dist)
 
-    eer = perf.equal_error_rate(all_true, all_dist),
+    eer = perf.equal_error_rate(all_true, all_dist)
     gar = perf.gar_at_zero_far_by_iterating(all_true, all_dist)
 
     return (eer, gar)
@@ -184,7 +183,7 @@ if __name__ == '__main__':
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
     
-    network = vggn.VGGFaceMEB(1)
+    network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
 
     for f in sorted(checkpoint_files):
         network.load_all_weights(os.path.join(path_to_weights, f))
