@@ -108,9 +108,9 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     cutoff = np.vectorize(lambda x: same if x >= threshold else different)
     predicted = cutoff(similarity)
 
-    print '--------computing the binary confusion matrix at threshold', threshold, '--------'
-    print '----scores at that threshold----'
-    print ' '.join(map(lambda x: str(x), predicted))
+    print '*binary*confusion*matrix'
+    print 'threshold*for*cutoff', threshold
+    print 'scores*after*cutoff*', ' '.join(map(lambda x: str(x), predicted))
     
     tp = 0
     fp = 0
@@ -130,7 +130,7 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     if (tp+fp+tn+fn) != len(predicted):
         raise Exception("confusion matrix entries don't add up")
 
-    print '----tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn,'----'
+    print 'tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn
     return tn, fp, fn, tp
 
 
@@ -162,10 +162,11 @@ def fnmr(ground_truth, similarity, threshold):
     Returns:
         a float indicating the FNMR rate
     '''
+    print '*computing*FRR'
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
     value = float(fn)/(float(tp)+float(fn))
-    print '---fnmr at threshold', threshold, value, '---'
+    print 'at*threshold', threshold, 'FRR', value
     return value
 
 
@@ -197,10 +198,11 @@ def fmr(ground_truth, similarity, threshold):
     Returns:
         a float indicating the FMR rate
     '''
+    print '*computing*FAR'
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
     fmr = float(fp)/(float(tn)+float(fp))
-    print '---fmr at threshold', threshold, fmr, '---'
+    print 'at*threshold', threshold, 'FMR', fmr
     return fmr
 
 
@@ -232,10 +234,11 @@ def gar(ground_truth, similarity, threshold):
     Returns:
         a float indicating the GAR rate
     '''
+    print 'computing*GAR'
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
     value = float(tp)/(float(tp)+float(fn))
-    print '---gar at threshold', threshold, value, '---'
+    print 'at*threshold', threshold, 'GAR', value
     return value
 
 
@@ -275,13 +278,10 @@ def equal_error_rate(ground_truth, similarity):
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
     
-    print '*****summary of EER computations*****'
-    print '**thresholds**'
-    print ' '.join(map(lambda x: str(x), sim_sorted))    
-    print '**corresponding fmrs**'
-    print ' '.join(map(lambda x: str(x), fmrs))
-    print '**corresponding fnmrs**'
-    print ' '.join(map(lambda x: str(x), fnmrs))
+    print '*summary*of*EER*computations*'
+    print '*thresholds*', ' '.join(map(lambda x: str(x), sim_sorted))    
+    print '*fmrs*', ' '.join(map(lambda x: str(x), fmrs))
+    print '*fnmrs*', ' '.join(map(lambda x: str(x), fnmrs))
     
     # find all differences between fnmr and fmr
     # and return the minimum
@@ -377,13 +377,10 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
     gars = map_gars(sim_sorted)
     fars = map_fars(sim_sorted)
 
-    print '*****summary of GAR at 0 FAR computations*****'
-    print '**thresholds**'
-    print ' '.join(map(lambda x: str(x), sim_sorted))    
-    print '**corresponding gars**'
-    print ' '.join(map(lambda x: str(x), gars))
-    print '**corresponding fars**'
-    print ' '.join(map(lambda x: str(x), fars))
+    print '*****summary*of*GAR*at*0*FAR*computations*****'
+    print '*thresholds*', ' '.join(map(lambda x: str(x), sim_sorted))    
+    print '*gars*', ' '.join(map(lambda x: str(x), gars))
+    print '*fars*', ' '.join(map(lambda x: str(x), fars))
     
     gars_at_zero=[]
     for i in xrange(len(fars)):

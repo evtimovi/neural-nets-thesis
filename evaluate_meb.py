@@ -123,8 +123,8 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
 
-    print '*subjects used as imposters*'
-    print ' '.join(subjects_shuffled)
+    print '*subjects*used*as*imposters*', ' '.join(subjects_shuffled) 
+
 
     mebs = stom.values()
     random_map = {}
@@ -133,8 +133,7 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     matches = get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
     matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
 
-    print '*raw matching scores for those subjects*'
-    print ' '.join(map(lambda x: str(x), matches))
+    print '*raw*matching*scores*for*those*subjects*', ' '.join(map(lambda x: str(x), matches))
     
     return matches
 
@@ -142,10 +141,8 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
     matches = get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
     matches =  map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
-    print '*subjects used as genuines*'
-    print ' '. join(stom.keys())
-    print '*raw matching scores for genuines*'
-    print ' '. join(map(lambda x: str(x), matches))
+    print '*subjects*used*as*genuines*', ' '. join(stom.keys())
+    print '*raw matching scores for genuines*', ' '. join(map(lambda x: str(x), matches)) 
     return matches
 
 
@@ -198,11 +195,11 @@ if __name__ == '__main__':
         eers = []
         gars = []
         for i in xrange(15):
-            print '***********starting file', f, 'iteration', i, '***********'
+            print '***********file*'+f+'*iteration*'+str(i)+'***********'
             eer, gar = evaluate_network(network, stom_new, f)
-            print '*eer for file', f, 'iteration', i, ':', eer
-            print '*gar for file', f, 'iteration', i, ':', gar
-            print '*********** end iteration ***********'
+            print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
+            print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
+            print '***********end*iteration***********'
             sys.stdout.flush()
             eers.append(eer)
             gars.append(gar)
