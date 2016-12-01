@@ -107,7 +107,10 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     different = np.amin(ground_truth)
     cutoff = np.vectorize(lambda x: same if x >= threshold else different)
     predicted = cutoff(similarity)
-    print '**********scores at threshold', threshold, predicted
+
+    print '--------computing the binary confusion matrix at threshold', threshold, '--------'
+    print '----scores at that threshold----'
+    print ' '.join(map(lambda x: str(x), predicted))
     
     tp = 0
     fp = 0
@@ -127,12 +130,8 @@ def binary_confusion_matrix(ground_truth, similarity, threshold):
     if (tp+fp+tn+fn) != len(predicted):
         raise Exception("confusion matrix entries don't add up")
 
-    print '**********tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn
+    print '----tp=', tp, 'fp=', fp, 'tn=', tn, 'fn=', fn,'----'
     return tn, fp, fn, tp
-    # see http://scikit-learn.org/stable/modules/model_evaluation.html#confusion-matrix
-    # for details on confusion matrix usage
-#    cm = skmet.confusion_matrix(ground_truth, predicted, [same,different])
-#    return cm.ravel()
 
 
 def fnmr(ground_truth, similarity, threshold):
@@ -165,7 +164,9 @@ def fnmr(ground_truth, similarity, threshold):
     '''
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
-    return float(fn)/(float(tp)+float(fn))
+    value = float(fn)/(float(tp)+float(fn))
+    print '---fnmr at threshold', threshold, value, '---'
+    return value
 
 
 def fmr(ground_truth, similarity, threshold):
@@ -198,9 +199,8 @@ def fmr(ground_truth, similarity, threshold):
     '''
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
-#    print '*******at threshold', threshold, 'tp=', tp, 'fp=', fp, 'fn=', fn, 'tn=', tn
     fmr = float(fp)/(float(tn)+float(fp))
-#    print 'fmr', fmr
+    print '---fmr at threshold', threshold, fmr, '---'
     return fmr
 
 
@@ -234,9 +234,9 @@ def gar(ground_truth, similarity, threshold):
     '''
     bfm = binary_confusion_matrix(ground_truth, similarity, threshold)
     tn, fp, fn, tp = bfm
-
-    #tn, fp, fn, tp = binary_confusion_matrix(ground_truth, similarity, threshold)
-    return float(tp)/(float(tp)+float(fn))
+    value = float(tp)/(float(tp)+float(fn))
+    print '---gar at threshold', threshold, value, '---'
+    return value
 
 
 def equal_error_rate(ground_truth, similarity):
@@ -270,18 +270,18 @@ def equal_error_rate(ground_truth, similarity):
     map_fmr = np.vectorize(lambda t: fmr(ground_truth, similarity, t))
     map_fnmr = np.vectorize(lambda t: fnmr(ground_truth, similarity, t))
 
-    # filter the similarities to leave away the maximum
-    # possible similarity measure
-    # if you don't do this, there is a case when there are no negatives)
     sim_sorted = np.unique(similarity)
-#    max_sim = np.amax(similarity)
-#    sim_sorted = filter(lambda x: x != max_sim, sim_sorted)
-
+    
     fmrs = map_fmr(sim_sorted)
     fnmrs = map_fnmr(sim_sorted)
-
-#    print 'fmrs', fmrs
-#    print 'fnmrs', fnmrs
+    
+    print '*****summary of EER computations*****'
+    print '**thresholds**'
+    print ' '.join(map(lambda x: str(x), sim_sorted))    
+    print '**corresponding fmrs**'
+    print ' '.join(map(lambda x: str(x), fmrs))
+    print '**corresponding fnmrs**'
+    print ' '.join(map(lambda x: str(x), fnmrs))
     
     # find all differences between fnmr and fmr
     # and return the minimum
@@ -341,44 +341,6 @@ def roc_auc_score(ground_truth, similarities):
     return skmet.roc_auc_score(ground_truth, similarities)
 
 
-def gar_at_zero_far_from_roc_curve(ground_truth, similarity):
-    '''
-    Computes the GAR at 0 FAR measure
-    (indicating true positive rate given no false positive rates)
-    given the scores in ground_truth and similarity.
-    This method uses a generated ROC curve to compute the measure.
-    Args:
-        ground_truth: an array of values with bigger values 
-                      representing "more similar"
-                      and smaller values representing "more different". These are 
-                      the ground_truth values of the pairs at each index.
-                      The index of a pair here must be the same as the 
-                      index of the same pair in similarity.
-        similarity: an array of values with bigger values 
-                    representing "more similar"
-                    and smaller values representing "more different". These are 
-                    the similarity measures obtained by the classifier.
-                    Note that if using Euclidean distance, 
-                    the values should be flipped
-                    (because the convention of similar/different is reversed).
-                    The index of a pair here must be the same as the 
-                    index of the same pair in ground_truth.
-
-
-   Return:
-        the GAR at min FAR measure
-    '''
-    far_values, gar_values = roc_curve(ground_truth, similarity)
-    
-    # the far values have many 0s, so 
-    # pick the last one
-    i = 0
-    while far_values[i] == 0:
-        i += 1
-    
-    return gar_values[i]
-
-
 def gar_at_zero_far_by_iterating(ground_truth, similarity):
     '''
     Computes the GAR at 0 FAR measure
@@ -411,12 +373,18 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
  
     map_gars = np.vectorize(lambda x: gar(ground_truth, similarity, x))
     map_fars = np.vectorize(lambda x: fmr(ground_truth, similarity, x))
-
+    
     gars = map_gars(sim_sorted)
     fars = map_fars(sim_sorted)
 
-#    print '*******fars', fars, 'given thresholds', sim_sorted
-
+    print '*****summary of GAR at 0 FAR computations*****'
+    print '**thresholds**'
+    print ' '.join(map(lambda x: str(x), sim_sorted))    
+    print '**corresponding gars**'
+    print ' '.join(map(lambda x: str(x), gars))
+    print '**corresponding fars**'
+    print ' '.join(map(lambda x: str(x), fars))
+    
     gars_at_zero=[]
     for i in xrange(len(fars)):
         if fars[i] == 0:

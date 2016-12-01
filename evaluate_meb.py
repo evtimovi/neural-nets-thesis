@@ -1,5 +1,6 @@
 from util import performance as perf
 from util import processimgs as pimg
+import numpy as np
 import json
 import matplotlib.pyplot as plt
 import os
@@ -127,18 +128,27 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects = stom.keys()
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
-    print 'subjects used in imposter', subjects_shuffled
+    print '*subjects used as imposters*'
+    print ' '.join(subjects_shuffled)
     mebs = stom.values()
     random_map = {}
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
     matches = get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
-    return map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
+    matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
+    print '*raw matching scores for those subjects*'
+    print ' '.join(map(lambda x: str(x), matches))
+    return matches
 
 
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
     matches = get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
-    return map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
+    matches =  map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
+    print '*subjects used as genuines*'
+    print ' '. join(stom.keys())
+    print '*raw matching scores for genuines*'
+    print ' '. join(map(lambda x: str(x), matches))
+    return matches
 
 
 def get_performance_measures(true_genuine, genuine_dist, 
@@ -185,14 +195,21 @@ if __name__ == '__main__':
     
     network = vggn.VGGFaceMEB(EVAL_SAMPLE_SIZE)
 
-    for f in sorted(checkpoint_files):
+    for f in sorted(checkpoint_files)[::-1]:
         network.load_all_weights(os.path.join(path_to_weights, f))
         eers = []
         gars = []
-        print 'evaluating', f
         for i in xrange(15):
+            print '***********starting file', f, 'iteration', i, '***********'
             eer, gar = evaluate_network(network, stom_new, f)
+            print '*eer for file', f, 'iteration', i, ':', eer
+            print '*gar for file', f, 'iteration', i, ':', gar
+            print '*********** end iteration ***********'
+            sys.stdout.flush()
             eers.append(eer)
             gars.append(gar)
-        print 'eers', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
-        print 'gars', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
+        eers = filter(lambda x: x is not None, eers)
+        gars = filter(lambda x: x is not None, gars)
+        print '****************** Final Results ******************'
+        print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
+        print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
