@@ -287,7 +287,9 @@ def equal_error_rate(ground_truth, similarity):
     # and return the minimum
     map_diff = np.vectorize(lambda x,y: abs(x-y))
     diffs = map_diff(fmrs,fnmrs)
-    return fmrs[list(diffs).index(np.amin(diffs))]
+    min_index = list(diffs).index(np.amin(diffs))
+    value = max(fmrs[min_index], fnmrs[min_index])
+    return value
 
 
 def roc_curve(ground_truth, similarity):
@@ -387,4 +389,4 @@ def gar_at_zero_far_by_iterating(ground_truth, similarity):
         if fars[i] == 0:
             gars_at_zero.append(gars[i])
 
-    return max(gars_at_zero) if len(gars_at_zero) > 0 else None
+    return max(gars_at_zero) if len(gars_at_zero) > 0 else 0.0

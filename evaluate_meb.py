@@ -194,17 +194,17 @@ if __name__ == '__main__':
         network.load_all_weights(os.path.join(path_to_weights, f))
         eers = []
         gars = []
-        for i in xrange(15):
+        for i in xrange(NUM_EVAL_ITERS):
             print '***********file*'+f+'*iteration*'+str(i)+'***********'
             eer, gar = evaluate_network(network, stom_new, f)
             print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
             print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
-            print '***********end*iteration***********'
+            print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
             sys.stdout.flush()
             eers.append(eer)
             gars.append(gar)
         eers = filter(lambda x: x is not None, eers)
         gars = filter(lambda x: x is not None, gars)
-        print '****************** Final Results ******************'
+        print '******************Final*Results******************'
         print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
         print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
