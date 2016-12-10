@@ -164,9 +164,11 @@ def get_performance_measures(true_genuine, genuine_dist,
     return (eer, gar)
 
 
-def evaluate_network(network, stom, weights_filename):
+def evaluate_network(network, stom, weights_filename, iteration):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
+
+    histogram(genuine_dist, imposter_dist, weights_filename + '_' + iteration)
 
     true_genuine = [1 for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
@@ -190,21 +192,21 @@ if __name__ == '__main__':
     
     network = vggn.VGGFaceMEB(1)
 
-    for f in sorted(checkpoint_files)[::-1]:
-        network.load_all_weights(os.path.join(path_to_weights, f))
-        eers = []
-        gars = []
-        for i in xrange(NUM_EVAL_ITERS):
-            print '***********file*'+f+'*iteration*'+str(i)+'***********'
-            eer, gar = evaluate_network(network, stom_new, f)
-            print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
-            print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
-            print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
-            sys.stdout.flush()
-            eers.append(eer)
-            gars.append(gar)
-        eers = filter(lambda x: x is not None, eers)
-        gars = filter(lambda x: x is not None, gars)
-        print '******************Final*Results******************'
-        print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
-        print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
+    f = 'weights_epoch_16_final.ckpt'
+    network.load_all_weights(os.path.join(VGG_WEIGHTS_PATH, f))
+    eers = []
+    gars = []
+    for i in xrange(NUM_EVAL_ITERS):
+        print '***********file*'+f+'*iteration*'+str(i)+'***********'
+        eer, gar = evaluate_network(network, stom_new, f, i)
+        print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
+        print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
+        print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
+    sys.stdout.flush()
+    eers.append(eer)
+    gars.append(gar)
+    eers = filter(lambda x: x is not None, eers)
+    gars = filter(lambda x: x is not None, gars)
+    print '******************Final*Results******************'
+    print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
+    print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
