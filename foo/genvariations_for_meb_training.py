@@ -8,7 +8,7 @@ IMGCODE = 'fb'
 if __name__ == "__main__":
     base_save_folder = os.path.join(SAVE_PATH, IMGCODE)
 
-    with open('fa.txt','r') as f:
+    with open((IMGCODE+'.txt'),'r') as f:
         for line in f:
             subj, img_file = line.strip('\n').split(' ')
             subjid, date, pose = img_file.split('_', 2)
@@ -24,7 +24,11 @@ if __name__ == "__main__":
 
             print 'now processing subject', subj
 
-            p.generate_meb_variations_and_save(image_path=os.path.realpath(os.path.join(crops_folder, img_file)),
+            try:
+                p.generate_meb_variations_and_save(image_path=os.path.realpath(os.path.join(crops_folder, img_file)),
                                                save_base_path=os.path.join(save_folder, 
                                                                            img_file.split(".")[0]),
                                                extension='.jpeg')
+            except:
+                print 'skipped subject', subj
+                continue

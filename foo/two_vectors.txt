@@ -1,0 +1,2 @@
+euclidean distance between same 15.3622913361
+euclidean distance between different 25.6515102386
