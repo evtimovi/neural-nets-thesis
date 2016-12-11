@@ -1,0 +1,2 @@
+equal error rate 0.086
+gar at 0 far 0.186
