@@ -109,11 +109,17 @@ def get_matches_distribution(true_stom, network_stom):
         an array of size len(network_stom.keys()) where each entry 
         represents the number of matches for some subject
     '''
-    true_subjects = sorted(true_stom.keys())
     match_scores = []
-    for s in network_stom.keys():
+    subjects = network_stom.keys()
+    for s in subjects:
         matches = len(filter(lambda x: x==true_stom[s], network_stom[s]))
         match_scores.append(matches)
+        subjects.append(s)
+
+    matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
+
+    print '*subjects*', ' '.join(subjects)
+    print '*matches*', ' '.join(matches)
 
     return match_scores
 
@@ -123,26 +129,23 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
 
-    print '*subjects*used*as*imposters*', ' '.join(subjects_shuffled) 
-
+#    print '*subjects*used*as*imposters*', ' '.join(subjects_shuffled) 
 
     mebs = stom.values()
     random_map = {}
     for i in xrange(len(subjects_shuffled)):
         random_map[subjects_shuffled[i]] = mebs[i]
-    matches = get_matches_distribution(random_map, get_quantized_outputs(network, random_map, files_base, sample_size, threshold)) 
-    matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
 
-    print '*raw*matching*scores*for*those*subjects*', ' '.join(map(lambda x: str(x), matches))
-    
+    netout = get_quantized_outputs(network, random_map, files_base, sample_size, threshold)
+    sys.stdout.write('*imposters*')
+    matches = get_matches_distribution(random_map, netout) 
     return matches
 
 
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
-    matches = get_matches_distribution(stom, get_quantized_outputs(network, stom, files_base, sample_size, threshold)) 
-    matches =  map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches)
-    print '*subjects*used*as*genuines*', ' '. join(stom.keys())
-    print '*raw*matching*scores*for*genuines*', ' '. join(map(lambda x: str(x), matches)) 
+    netout = get_quantized_outputs(network, stom, files_base, sample_size, threshold)
+    sys.stdout.write('*genuines*')
+    matches = get_matches_distribution(stom, netout) 
     return matches
 
 
@@ -168,7 +171,7 @@ def evaluate_network(network, stom, weights_filename, iteration):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    histogram(genuine_dist, imposter_dist, weights_filename + '_' + iteration)
+    histogram(genuine_dist, imposter_dist, weights_filename + '_' + str(iteration))
 
     true_genuine = [1 for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
@@ -192,21 +195,21 @@ if __name__ == '__main__':
     
     network = vggn.VGGFaceMEB(1)
 
-    f = 'weights_epoch_16_final.ckpt'
-    network.load_all_weights(os.path.join(VGG_WEIGHTS_PATH, f))
-    eers = []
-    gars = []
-    for i in xrange(NUM_EVAL_ITERS):
-        print '***********file*'+f+'*iteration*'+str(i)+'***********'
-        eer, gar = evaluate_network(network, stom_new, f, i)
-        print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
-        print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
-        print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
-    sys.stdout.flush()
-    eers.append(eer)
-    gars.append(gar)
-    eers = filter(lambda x: x is not None, eers)
-    gars = filter(lambda x: x is not None, gars)
-    print '******************Final*Results******************'
-    print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
-    print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)
+    for f in FILES:
+        network.load_all_weights(os.path.join(VGG_WEIGHTS_PATH, f))
+        eers = []
+        gars = []
+        for i in xrange(NUM_EVAL_ITERS):
+            print '***********file*'+f+'*iteration*'+str(i)+'***********'
+            eer, gar = evaluate_network(network, stom_new, f, i)
+            print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
+            print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
+            print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
+            sys.stdout.flush()
+            eers.append(eer)
+            gars.append(gar)
+        eers = filter(lambda x: x is not None, eers)
+        gars = filter(lambda x: x is not None, gars)
+        print '******************Final*Results*for*file'+f+'******************'
+        print 'eers (filtered)', eers, 'average: ', np.mean(eers), '+/-', np.std(eers)
+        print 'gars (filtered)', gars, 'average: ', np.mean(gars), '+/-', np.std(gars)

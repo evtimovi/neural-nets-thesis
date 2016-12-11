@@ -7,8 +7,11 @@ PATH_FTOS =  './datasplits/fa_filepath_to_subject_colorferet.json'
 VGG_WEIGHTS_PATH = './output/bigger_batch_32_subjects/weights'
 SAVE_FOLDER = './output/bigger_batch_32_subjects'
 #SAVE_FOLDER = './output/euclidean_32_subjects_cont/'
+FILES = ['weights_epoch_15_final.ckpt', 'weights_epoch_14_final.ckpt','weights_epoch_13_final.ckpt','weights_epoch_12_final.ckpt','weights_epoch_11_final.ckpt',
+        'weights_epoch_10_final.ckpt','weights_epoch_9_final.ckpt','weights_epoch_8_final.ckpt','weights_epoch_7_final.ckpt']
+
 EVAL_SAMPLE_SIZE = 196 # number of images per subject used to evaluate the network 
-NUM_EVAL_ITERS = 15 #how many times should the accuracy measures be computed with randomized imposters
+NUM_EVAL_ITERS = 2 #how many times should the accuracy measures be computed with randomized imposters
 EPOCHS = 20 
 BATCH_SIZE = 4*49
 LEARNING_RATE = 0.01
