@@ -114,7 +114,7 @@ def get_matches_distribution(true_stom, network_stom, label):
     '''
     subjects = network_stom.keys()
 
-    match_scores = map(lambda s: float(network_stom[s].count(true_stom[s]))/float(EVAL_SAMPLE_SIZE), subjects)
+    match_scores = map(lambda s: str(float(network_stom[s].count(true_stom[s]))/float(EVAL_SAMPLE_SIZE)), subjects)
 
     print (label+'*subjects*'), ' '.join(subjects)
     print (label+'*scores*'), ' '.join(match_scores)
@@ -128,15 +128,22 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
     subjects_shuffled = subjects[:]
     random.SystemRandom().shuffle(subjects_shuffled)
 
-#    print '*subjects*used*as*imposters*', ' '.join(subjects_shuffled) 
-
-    mebs = stom.values()
     random_map = {}
-    for i in xrange(len(subjects_shuffled)):
-        random_map[subjects_shuffled[i]] = mebs[i]
+    firstpart=[]
+    secondpart=[]
+    for s1, s2 in zip(subjects,subjects_shuffled):
+        random_map[s2] = stom[s1]
+        firstpart.append(s1)
+        secondpart.append(s2)
 
     netout = get_quantized_outputs(network, random_map, files_base, sample_size, threshold)
     matches = get_matches_distribution(random_map, netout, "*imposters*") 
+
+    print '*imposters*left*part*', ' '.join(firstpart)
+    print '*imposters*right*part*', ' '.join(secondpart)
+    print '*imposter*pair*scores*', ' '.join(matches)
+    sys.stdout.flush()
+
     return matches
 
 
