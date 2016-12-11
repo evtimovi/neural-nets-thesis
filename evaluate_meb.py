@@ -82,7 +82,10 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
 
         #skip those fb's that are not in the fa's (i.e. in the stom dictionary)
         if not os.path.exists(subj_path):
+            print 'skipping*subject*without*fa*', s
+            sys.stdout.flush()
             continue
+
         all_files = []
 
         listed_files = sorted(os.listdir(subj_path))
@@ -109,17 +112,13 @@ def get_matches_distribution(true_stom, network_stom, label):
         an array of size len(network_stom.keys()) where each entry 
         represents the number of matches for some subject
     '''
-    match_scores = []
     subjects = network_stom.keys()
-    for s in subjects:
-        matches = len(filter(lambda x: x==true_stom[s], network_stom[s]))
-        match_scores.append(matches)
-        subjects.append(s)
 
-    matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
+    match_scores = map(lambda s: float(network_stom[s].count(true_stom[s]))/float(EVAL_SAMPLE_SIZE), subjects)
 
     print (label+'*subjects*'), ' '.join(subjects)
-    print (label+'*scores*'), ' '.join(matches)
+    print (label+'*scores*'), ' '.join(match_scores)
+    sys.stdout.flush()
 
     return match_scores
 
@@ -169,7 +168,7 @@ def evaluate_network(network, stom, weights_filename, iteration):
     genuine_dist = get_genuine_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
     imposter_dist = get_imposter_distribution(network, stom, EVAL_SET_BASE, EVAL_SAMPLE_SIZE, 0.5)
 
-    histogram(genuine_dist, imposter_dist, weights_filename + '_' + str(iteration))
+#    histogram(genuine_dist, imposter_dist, weights_filename + '_' + str(iteration))
 
     true_genuine = [1 for _ in xrange(len(genuine_dist))]
     true_imposter = [0 for _ in xrange(len(imposter_dist))]
@@ -199,6 +198,7 @@ if __name__ == '__main__':
         gars = []
         for i in xrange(NUM_EVAL_ITERS):
             print '***********file*'+f+'*iteration*'+str(i)+'***********'
+            sys.stdout.flush()
             eer, gar = evaluate_network(network, stom_new, f, i)
             print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
             print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
