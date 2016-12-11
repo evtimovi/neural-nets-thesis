@@ -97,7 +97,7 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
     return subject_to_trained_mebs
 
 
-def get_matches_distribution(true_stom, network_stom):
+def get_matches_distribution(true_stom, network_stom, label):
     '''
     This method counts up the matches of the meb for each subject
     that is a key in network_stom based on the ground truth matches
@@ -118,8 +118,8 @@ def get_matches_distribution(true_stom, network_stom):
 
     matches = map(lambda x: float(x)/float(EVAL_SAMPLE_SIZE), matches) 
 
-    print '*subjects*', ' '.join(subjects)
-    print '*matches*', ' '.join(matches)
+    print (label+'*subjects*'), ' '.join(subjects)
+    print (label+'*scores*'), ' '.join(matches)
 
     return match_scores
 
@@ -137,15 +137,13 @@ def get_imposter_distribution(network, stom, files_base, sample_size, threshold=
         random_map[subjects_shuffled[i]] = mebs[i]
 
     netout = get_quantized_outputs(network, random_map, files_base, sample_size, threshold)
-    sys.stdout.write('*imposters*')
-    matches = get_matches_distribution(random_map, netout) 
+    matches = get_matches_distribution(random_map, netout, "*imposters*") 
     return matches
 
 
 def get_genuine_distribution(network, stom, files_base, sample_size, threshold=0.5):
     netout = get_quantized_outputs(network, stom, files_base, sample_size, threshold)
-    sys.stdout.write('*genuines*')
-    matches = get_matches_distribution(stom, netout) 
+    matches = get_matches_distribution(stom, netout, '*genuines*') 
     return matches
 
 
