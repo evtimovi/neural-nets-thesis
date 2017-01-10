@@ -16,13 +16,21 @@ def epoch(network, ftos, stom, epoch_n):
     batch_size = BATCH_SIZE
     save_path_weights = os.path.join(SAVE_FOLDER, 'weights')
 
+    sample_size = 196
+
     if not os.path.exists(save_path_weights):
         os.mkdir(save_path_weights)
 
     all_subjects = stom.keys()
     all_filenames = []
     for s in all_subjects:
-        all_filenames.extend(os.listdir(os.path.join(TRAIN_SET_BASE, s)))
+        subj_all = os.listdir(os.path.join(TRAIN_SET_BASE, s))
+        total = len(subj_all)
+        step = total/sample_size
+        subj_sampled = []
+        for f in xrange(0, len(subj_all), step):
+            subj_sampled.append(subj_all[f])
+        all_filenames.extend(subj_sampled)
 
     random.SystemRandom().shuffle(all_filenames)
 
