@@ -86,13 +86,7 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
             sys.stdout.flush()
             continue
 
-        all_files = []
-
-        listed_files = sorted(os.listdir(subj_path))
-        total = len(listed_files)
-        step = total/sample_size
-        for f in xrange(0, len(listed_files), step):
-            all_files.append(listed_files[f])
+        all_files = random.SystemRandom().sample(os.listdir(subj_path), sample_size)
         for i in xrange(0, len(all_files)):
             img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
             meb = network.get_raw_output_for([img,])
@@ -209,7 +203,7 @@ if __name__ == '__main__':
             eer, gar = evaluate_network(network, stom_new, f, i)
             print '*eer*for*file*'+f+'*iteration*'+str(i)+':', eer
             print '*gar*for*file*'+f+'*iteration*'+str(i)+':', gar
-            print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'***********'
+            print '***********end*iteration*'+str(i)+'*of*'+str(NUM_EVAL_ITERS)+'*for*file*'+f+'***********'
             sys.stdout.flush()
             eers.append(eer)
             gars.append(gar)
