@@ -77,18 +77,22 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
     subject_to_trained_mebs = {}
 
     for s in subjects:
-        subject_to_trained_mebs[s] = []
         subj_path = os.path.join(files_base, s)
+        img_files = os.listdir(subj_path)
 
-        #skip those fb's that are not in the fa's (i.e. in the stom dictionary)
-        if not os.path.exists(subj_path):
+        # skip those fb's that are not in the fa's (i.e. in the stom dictionary)
+        # and skip subjects without fb's 
+        if (not os.path.exists(subj_path)) or (len(img_files) < sample_size):
             print 'skipping*subject*without*fa*', s
             sys.stdout.flush()
+            sys.stderr.write("subject*" + s + "*has*no*fbs*\n")
             continue
 
-        all_files = random.SystemRandom().sample(os.listdir(subj_path), sample_size)
-        for i in xrange(0, len(all_files)):
-            img = pimg.load_image_plain(os.path.join(subj_path, all_files[i]))
+        subject_to_trained_mebs[s] = []
+        img_files = random.SystemRandom().sample(img_files, sample_size)
+
+        for f in img_files:
+            img = pimg.load_image_plain(os.path.join(subj_path, f))
             meb = network.get_raw_output_for([img,])
             subject_to_trained_mebs[s].append(map(lambda x: 1 if x > threshold else 0, meb))
     return subject_to_trained_mebs
