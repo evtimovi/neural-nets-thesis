@@ -39,7 +39,7 @@ def epoch(network, ftos, stom, epoch_n):
 
     for i in range(0, len(all_paths), batch_size):
         batch_n = i/batch_size
-        input_imgs = map(lambda img: pimg.load_image_plain(img), all_paths[i:(i+batch_size)])
+        input_imgs = map(lambda img: pimg.load_adjust_avg(img), all_paths[i:(i+batch_size)])
         target_codes = map(lambda img: stom[ftos[img]], all_filenames[i:(i+batch_size)])
         loss = network.train_batch(input_imgs, target_codes, LEARNING_RATE, all_layers=False)
         

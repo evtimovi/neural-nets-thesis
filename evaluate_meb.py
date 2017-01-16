@@ -37,7 +37,7 @@ def get_avg_euclidean(network, stom):
 
         # only use these random images in the evaluation
         sampled_files = random.SystemRandom().sample(os.listdir(subj_path), EVAL_SAMPLE_SIZE)
-        inputs_arr = map(lambda x: pimg.load_image_plain(os.path.join(subj_path,x)), sampled_files)
+        inputs_arr = map(lambda x: pimg.load_adjust_avg(os.path.join(subj_path,x)), sampled_files)
         targets_arr = [stom[s] for _ in xrange(EVAL_SAMPLE_SIZE)]
         subject_to_euclidean[s] = network.get_avg_euclid(inputs_arr, targets_arr)
     return subject_to_euclidean
@@ -92,7 +92,7 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
         img_files = random.SystemRandom().sample(img_files, sample_size)
 
         for f in img_files:
-            img = pimg.load_image_plain(os.path.join(subj_path, f))
+            img = pimg.load_adjust_avg(os.path.join(subj_path, f))
             meb = network.get_raw_output_for([img,])
             subject_to_trained_mebs[s].append(map(lambda x: 1 if x > threshold else 0, meb))
     return subject_to_trained_mebs

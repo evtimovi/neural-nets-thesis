@@ -3,6 +3,7 @@ sys.path.reverse()
 import numpy as np
 import cv2
 
+
 def load_image_plain(path):
     img = cv2.imread(path)
 
@@ -10,6 +11,12 @@ def load_image_plain(path):
         raise Exception("Image at path " + path + " not found. Check path or numpy, cv2, tensorflow import order.")
     else:
         return img
+
+def load_adjust_avg(path):
+    img = load_image_plain(path)
+    img -= [129.1863,104.7624,93.5940]
+    return img
+
 
 def crop_to_face(img):
     face_cascade = cv2.CascadeClassifier('/home/microway/opencv/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
