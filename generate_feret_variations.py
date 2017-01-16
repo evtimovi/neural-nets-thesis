@@ -47,4 +47,4 @@ if __name__=="__main__":
     subjects_file = os.path.join('datasplits', prefix+'_subjects.txt')
     sys.stdout.write("Done. Writing subjects to file " + subjects_file + "\n")
     with open(subjects_file, 'w') as f:
-        f.write(subjects)
+        f.write(str(subjects))
