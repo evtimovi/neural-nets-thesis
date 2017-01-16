@@ -72,9 +72,9 @@ def load_generate_meb_variations(image_path, crop_w=196, crop_h=196):
     while (crop_w + i) < orig_w:
         while (crop_h + j) < orig_h:
             final_imgs.append(cv2.resize(img[i:crop_w+i, j:crop_h+j], (orig_w, orig_h)))
-            j = j+1
+            j = j+4
         j = 0
-        i = i+1
+        i = i+4
 
     final_imgs.extend(map(lambda x: cv2.flip(x, flipCode=1), final_imgs))
     return final_imgs
