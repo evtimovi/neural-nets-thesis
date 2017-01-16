@@ -1,3 +1,5 @@
+import sys
+sys.path.reverse() 
 import numpy as np
 import cv2
 
@@ -14,21 +16,23 @@ def crop_to_face(img):
     gray=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     cv2.equalizeHist(gray, gray)  
     #detect faces. 
-    faces = face_cascade.detectMultiScale3(gray, 1.05, 5, outputRejectLevels=True)
-    tmp=len(faces[2])
+    faces = []
+    reject_levels=[]
+    face_cascade.detectMultiScale(gray, faces, reject_levels, scaleFactor=1.05, minNeighbors=5, flags=0, outputRejectLevels=True)
+    tmp=len(reject_levels)
     #If none found use entire image
     if tmp==0:
         img2=img
     else:
         #use the last face detected since it is the biggest
-        tmp=np.argmax(faces[2])
-        length=faces[0][tmp][2]
+        tmp=np.argmax(reject_levels)
+        length=faces[tmp][2]
         #make crop size a bit bigger than the detection 
         offset=round(length*0.05)
-        x1=max(0,faces[0][tmp][1]-offset)
-        y1=max(0,faces[0][tmp][0]-offset)
-        x2=min(faces[0][tmp][1]+faces[0][tmp][3]+offset,img.shape[0])
-        y2=min(faces[0][tmp][0]+faces[0][tmp][2]+offset,img.shape[1])
+        x1=max(0,faces[tmp][1]-offset)
+        y1=max(0,faces[tmp][0]-offset)
+        x2=min(faces[tmp][1]+faces[tmp][3]+offset,img.shape[0])
+        y2=min(faces[tmp][0]+faces[tmp][2]+offset,img.shape[1])
         img2=img[x1:x2,y1:y2]
 
     return img2
