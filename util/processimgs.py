@@ -13,7 +13,7 @@ def load_image_plain(path):
         return img
 
 def load_adjust_avg(path):
-    img = load_image_plain(path)
+    img = load_image_plain(path).astype(np.float32)
     img -= [129.1863,104.7624,93.5940]
     return img
 
