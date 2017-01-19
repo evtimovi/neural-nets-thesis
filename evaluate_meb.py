@@ -198,7 +198,7 @@ if __name__ == '__main__':
     network = vggn.VGGFaceMEB(1)
 
     for f in FILES:
-        network.load_all_weights(os.path.join(VGG_WEIGHTS_PATH, f))
+        network.load_all_weights(os.path.join(EVAL_WEIGHTS_PATH, f))
         eers = []
         gars = []
         for i in xrange(NUM_EVAL_ITERS):

@@ -6,7 +6,8 @@ VGG_WEIGHTS_PATH = './vggface/weights/plain-vgg-trained.ckpt'
 #VGG_WEIGHTS_PATH = 'output/euclidean_32_subjects/weights/weights_epoch_4_final.ckpt'
 #VGG_WEIGHTS_PATH = './output/bigger_batch_32_subjects/weights'
 #VGG_WEIGHTS_PATH = './output/more_subjects_less_variation/weights/'
-FILES = ['weights_epoch_15_final.ckpt','weights_epoch_13_final.ckpt','weights_epoch_11_final.ckpt',
+EVAL_WEIGHTS_PATH = './output/rc_poses/weights/'
+FILES = ['weights_epoch_13_final.ckpt','weights_epoch_12_final.ckpt','weights_epoch_11_final.ckpt','weights_epoch_10_final.ckpt',
         'weights_epoch_9_final.ckpt','weights_epoch_7_final.ckpt','weights_epoch_5_final.ckpt']
 #SAVE_FOLDER = './output/bigger_batch_32_subjects'
 #SAVE_FOLDER = './output/euclidean_32_subjects_cont/'

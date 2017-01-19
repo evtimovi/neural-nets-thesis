@@ -23,6 +23,7 @@ if __name__=="__main__":
     with open(fpath, 'r') as f:
         for l in f:
             subjid, imgbase, captdate, captgall, daysdiff = l.split(" ")
+            imgname, imgext = imgbase.split(".")
             if int(subjid) < 43:
                 continue
             subjects.append(subjid)
@@ -31,7 +32,7 @@ if __name__=="__main__":
                 os.mkdir(subj_path_dest)
             
             imgpath_orig = os.path.join(origin_base, subjid, imgbase)
-            imgname_dest = imgbase.split(".")[0] + ".jpg"
+            imgname_dest = imgname + ".jpg"
             imgpath_dest = os.path.join(subj_path_dest, imgname_dest)
 
             sys.stdout.write("now cropping subject " + subjid + "\n")
@@ -42,7 +43,8 @@ if __name__=="__main__":
             sys.stdout.write("now generating variations for subject " + subjid + "\n")
             sys.stdout.flush()
             # then do the MEB variations
-            pimg.generate_meb_variations_and_save(imgpath_dest, subj_path_dest)  
+            pimg.generate_meb_variations_and_save(imgpath_dest, 
+                                                  os.path.join(subj_path_dest,imgname))  
 
     subjects_file = os.path.join('datasplits', prefix+'_subjects.txt')
     sys.stdout.write("Done. Writing subjects to file " + subjects_file + "\n")
