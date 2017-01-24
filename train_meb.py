@@ -64,7 +64,7 @@ if __name__ == '__main__':
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
 
-    network = vggn.VGGFaceMEB(BATCH_SIZE)
+    network = vggn.VGGFaceMEB(BATCH_SIZE, gpu="/gpu:2")
     network.load_vgg_weights(os.path.realpath(VGG_WEIGHTS_PATH))
     
     start = time.time()

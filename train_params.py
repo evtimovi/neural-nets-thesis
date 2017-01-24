@@ -1,22 +1,15 @@
-EVAL_SET_BASE = './datasets/feret-meb-vars/rc'
+EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
 TRAIN_SET_BASE = './datasets/feret-meb-vars/fa'
 PATH_STOM = './datasplits/subjtomeb_colorferet.json'
 PATH_FTOS =  './datasplits/fa_filepath_to_subject_colorferet.json'
 VGG_WEIGHTS_PATH = './vggface/weights/plain-vgg-trained.ckpt'
-#VGG_WEIGHTS_PATH = 'output/euclidean_32_subjects/weights/weights_epoch_4_final.ckpt'
-#VGG_WEIGHTS_PATH = './output/bigger_batch_32_subjects/weights'
-#VGG_WEIGHTS_PATH = './output/more_subjects_less_variation/weights/'
-EVAL_WEIGHTS_PATH = './output/rc_poses/weights/'
-FILES = ['weights_epoch_19_final.ckpt','weights_epoch_18_final.ckpt','weights_epoch_17_final.ckpt','weights_epoch_16_final.ckpt',
-        'weights_epoch_15_final.ckpt','weights_epoch_14_final.ckpt',
+EVAL_WEIGHTS_PATH = './output/rc_subjects/weights/'
+#FILES = #['weights_epoch_19_final.ckpt','weights_epoch_18_final.ckpt','weights_epoch_17_final.ckpt','weights_epoch_16_final.ckpt',
+FILES = ['weights_epoch_15_final.ckpt','weights_epoch_14_final.ckpt',
         'weights_epoch_13_final.ckpt','weights_epoch_12_final.ckpt','weights_epoch_11_final.ckpt','weights_epoch_10_final.ckpt',
         'weights_epoch_9_final.ckpt','weights_epoch_7_final.ckpt','weights_epoch_5_final.ckpt']
-#SAVE_FOLDER = './output/bigger_batch_32_subjects'
-#SAVE_FOLDER = './output/euclidean_32_subjects_cont/'
-#SAVE_FOLDER = './output/more_subjects_less_variation'
-SAVE_FOLDER = "./output/rc_poses"
-#FILES = ['weights_epoch_9_final.ckpt','weights_epoch_16_final.ckpt','weights_epoch_13_final.ckpt']
-EVAL_SAMPLE_SIZE = 196 # number of images per subject used to evaluate the network 
+SAVE_FOLDER = "./output/rc_subjects"
+EVAL_SAMPLE_SIZE = 196  # number of images per subject used to evaluate the network 
 NUM_EVAL_ITERS = 2 #how many times should the accuracy measures be computed with randomized imposters
 EPOCHS = 20 
 BATCH_SIZE = 2*49

@@ -195,7 +195,7 @@ if __name__ == '__main__':
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
     
-    network = vggn.VGGFaceMEB(1)
+    network = vggn.VGGFaceMEB(1, gpu="/gpu:2")
 
     for f in FILES:
         network.load_all_weights(os.path.join(EVAL_WEIGHTS_PATH, f))

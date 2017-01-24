@@ -14,28 +14,30 @@ and train a neural network that maps faces to MEB codes
 (the MEB codes will be provided externally)
 '''
 class VGGFaceMEB(parent.VGGFace):
-    def __init__(self, batch_size, keysize=256, max_checkpoints=20):
-         # initialize everything in the parent
-        super(VGGFaceMEB, self).__init__(batch_size)
+    def __init__(self, batch_size, gpu="/gpu:0", keysize=256, max_checkpoints=20):
+        self.gpu = gpu
+        with parent.tf.device(self.gpu):
+             # initialize everything in the parent
+            super(VGGFaceMEB, self).__init__(batch_size)
 
-        # append a linear layer of keysize neurons
-        # for linear the syntax is:
-        # (layer_type, layer_number, num_neurons, activation_function)
-        self.layers.append(('linear', '41', keysize, 'sigmoid'))
+            # append a linear layer of keysize neurons
+            # for linear the syntax is:
+            # (layer_type, layer_number, num_neurons, activation_function)
+            self.layers.append(('linear', '41', keysize, 'sigmoid'))
 
-        # this will hold the MEB codes we are aiming to train to
-        self.target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
+            # this will hold the MEB codes we are aiming to train to
+            self.target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
 
-        # initialize everything else (including TF variables)
-        self._setup_network_variables()
+            # initialize everything else (including TF variables)
+            self._setup_network_variables()
 
-        self.sess.run(parent.tf.initialize_variables(filter(lambda x: x.name.startswith('linear_3'),parent.tf.all_variables())))
+            self.sess.run(parent.tf.initialize_variables(filter(lambda x: x.name.startswith('linear_3'),parent.tf.all_variables())))
 
-        self.saver = parent.tf.train.Saver(max_to_keep=max_checkpoints)
-        # restorer is for VGG variables only
-        # saver is for all variables
-        self.restorer = parent.tf.train.Saver(filter(lambda x: not x.name.startswith('linear_3'),parent.tf.all_variables()))
-        self.weights_loaded = False
+            self.saver = parent.tf.train.Saver(max_to_keep=max_checkpoints)
+            # restorer is for VGG variables only
+            # saver is for all variables
+            self.restorer = parent.tf.train.Saver(filter(lambda x: not x.name.startswith('linear_3'),parent.tf.all_variables()))
+            self.weights_loaded = False
 
     def load_vgg_weights(self, path):
         '''
@@ -76,40 +78,44 @@ class VGGFaceMEB(parent.VGGFace):
             the cross entropy loss after training the batch
         '''
 
-        y_target = self.target_code
-        y_output = self.get_output()
-        
-        if loss == 'logloss':
-            #cross_entropy
-            ce_1 = parent.tf.mul(y_target, parent.tf.log(y_output))
-            ce_2 = parent.tf.mul(parent.tf.sub(1.0, y_target), parent.tf.log(parent.tf.sub(1.0, y_output)))
-            loss_op = -parent.tf.reduce_mean(parent.tf.reduce_sum(parent.tf.add(ce_1, ce_2), 1))
-        elif loss == 'euclidean':
-            #euclidean
-            loss_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(y_output, y_target)), 1)))
-        
-        if all_layers:
-            train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op)
-        else:
-            if not self.weights_loaded:
-                print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
-            vars_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
-            train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op, var_list=vars_to_train)
+        with parent.tf.device(self.gpu):
 
-        # vars at 0 holds the input placeholder in a tuple
-        # the second entry in the tuple is the actual placeholder
-        _, loss = self.sess.run([train_step, loss_op],
+            y_target = self.target_code
+            y_output = self.get_output()
+        
+            if loss == 'logloss':
+                #cross_entropy
+                ce_1 = parent.tf.mul(y_target, parent.tf.log(y_output))
+                ce_2 = parent.tf.mul(parent.tf.sub(1.0, y_target), parent.tf.log(parent.tf.sub(1.0, y_output)))
+                loss_op = -parent.tf.reduce_mean(parent.tf.reduce_sum(parent.tf.add(ce_1, ce_2), 1))
+            elif loss == 'euclidean':
+                #euclidean
+                loss_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(y_output, y_target)), 1)))
+        
+            if all_layers:
+                train_step =  parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op)
+            else:
+                if not self.weights_loaded:
+                    print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
+                vars_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
+                train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op, var_list=vars_to_train)
+
+            # vars at 0 holds the input placeholder in a tuple
+            # the second entry in the tuple is the actual placeholder
+            _, loss = self.sess.run([train_step, loss_op],
                                  feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
         
-        return loss
+            return loss
 
     def get_raw_output_for(self, img):
         '''
         This method runs the image img through the network
         and returns the output.
         '''
-        x_image = self.vars[0][1]
-        return self.get_output().eval(feed_dict={x_image:img})[0]
+        with parent.tf.device(self.gpu):
+
+            x_image = self.vars[0][1]
+            return self.get_output().eval(feed_dict={x_image:img})[0]
 
     def save_weights(self, path):
         '''
@@ -126,17 +132,21 @@ class VGGFaceMEB(parent.VGGFace):
         an MEB code. The quantization is performed with the given
         threshold (default: 0.5)
         '''
-        # we appended the input placeholder to the beginning of the vars array
-        # the actual variable there is in the second position
-        x_image = self.vars[0][1]
-        output = self.get_output().eval(feed_dict={x_image:img})[0]
-        return map(lambda x: 0 if x<threshold else 1, output)
+        with parent.tf.device(self.gpu):
+
+            # we appended the input placeholder to the beginning of the vars array
+            # the actual variable there is in the second position
+            x_image = self.vars[0][1]
+            output = self.get_output().eval(feed_dict={x_image:img})[0]
+            return map(lambda x: 0 if x<threshold else 1, output)
 
     def get_avg_euclid(self, inputs_arr, targets_arr):
-        euclidean_mean_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1)))
-        _, avg_euclidean = self.sess.run([self.get_output(), euclidean_mean_op], 
+        with parent.tf.device(self.gpu):
+
+            euclidean_mean_op = parent.tf.reduce_mean(parent.tf.sqrt(parent.tf.reduce_sum(parent.tf.square(parent.tf.sub(self.get_output(), self.target_code)), 1)))
+            _, avg_euclidean = self.sess.run([self.get_output(), euclidean_mean_op], 
                                          feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
-        return avg_euclidean
+            return avg_euclidean
 
 '''
 This class inherits from the paretn VGGFace to build a 
