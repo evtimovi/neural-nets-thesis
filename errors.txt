@@ -44,3 +44,39 @@ I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow devi
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:1) -> (device: 1, name: Tesla K40m, pci bus id: 0000:03:00.0)
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:2) -> (device: 2, name: Tesla K40m, pci bus id: 0000:82:00.0)
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:3) -> (device: 3, name: Tesla K40m, pci bus id: 0000:83:00.0)
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
+subject*00989*has*no*fbs*
