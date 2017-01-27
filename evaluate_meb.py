@@ -89,8 +89,8 @@ def get_quantized_outputs(network, stom, files_base, sample_size, threshold=0.5)
             continue
 
         subject_to_trained_mebs[s] = []
-        img_files = random.SystemRandom().sample(img_files, sample_size)
-
+#        img_files = random.SystemRandom().sample(img_files, sample_size)
+        img_files = sorted(img_files)[:EVAL_SAMPLE_SIZE]
         for f in img_files:
             img = pimg.load_adjust_avg(os.path.join(subj_path, f))
             meb = network.get_raw_output_for([img,])

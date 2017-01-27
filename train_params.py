@@ -9,7 +9,7 @@ FILES = ['weights_epoch_15_final.ckpt','weights_epoch_14_final.ckpt',
         'weights_epoch_13_final.ckpt','weights_epoch_12_final.ckpt','weights_epoch_11_final.ckpt','weights_epoch_10_final.ckpt',
         'weights_epoch_9_final.ckpt','weights_epoch_7_final.ckpt','weights_epoch_5_final.ckpt']
 SAVE_FOLDER = "./output/rc_subjects"
-EVAL_SAMPLE_SIZE = 196  # number of images per subject used to evaluate the network 
+EVAL_SAMPLE_SIZE = 99  # number of images per subject used to evaluate the network 
 NUM_EVAL_ITERS = 2 #how many times should the accuracy measures be computed with randomized imposters
 EPOCHS = 20 
 BATCH_SIZE = 2*49
