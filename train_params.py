@@ -1,4 +1,4 @@
-EVAL_SET_BASE = './datasets/feret-meb-vars/fb'
+EVAL_SET_BASE = './datasets/feret-meb-vars/rc'
 TRAIN_SET_BASE = './datasets/feret-meb-vars/fa'
 PATH_STOM = './datasplits/subjtomeb_colorferet.json'
 PATH_FTOS =  './datasplits/fa_filepath_to_subject_colorferet.json'
