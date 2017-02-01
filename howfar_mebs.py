@@ -13,10 +13,9 @@ def index_match(arr1, arr2):
             return True
     return False
 
-subject = raw_input("specify subject: ")
-
 path_base = "./datasets/feret-meb-vars/"
-sample_n = 100
+sample_n = 99
+subjects=['00070','00140','00468','00682','00636']
 
 total_data = [] # map from subject to tuple (subjectid, fbdist, rcdist, imposterid, fbdist_imposter, rcdist_imposter)
 
@@ -53,23 +52,25 @@ def calculate_mebs_for_subject(subject_id, img_code):
 
 with open(os.path.realpath('./datasplits/subjtomeb_colorferet.json'),'r') as f:
         stom = json.load(f)
-true_meb=stom[subject]
 
-mebs_fa=calculate_mebs_for_subject(subject,"fa")
-mebs_fb=calculate_mebs_for_subject(subject,"fb")
-mebs_rc=calculate_mebs_for_subject(subject,"rc")
+for subject in subjects:
+    true_meb=stom[subject]
 
-for i in xrange(sample_n):
-    euclidean_fa = distance.euclidean(true_meb, mebs_fa[i])
-    euclidean_fb = distance.euclidean(true_meb, mebs_fb[i])
-    euclidean_rc = distance.euclidean(true_meb, mebs_rc[i])
-    hamming_fa = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_fa[i]))
-    hamming_fb = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_fb[i]))
-    hamming_rc = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_rc[i]))
+    mebs_fa=calculate_mebs_for_subject(subject,"fa")
+    mebs_fb=calculate_mebs_for_subject(subject,"fb")
+    mebs_rc=calculate_mebs_for_subject(subject,"rc")
 
-    total_data.append((euclidean_fa, euclidean_fb, euclidean_rc,hamming_fa,hamming_fb,hamming_rc))
+    for i in xrange(sample_n):
+        euclidean_fa = distance.euclidean(true_meb, mebs_fa[i])
+        euclidean_fb = distance.euclidean(true_meb, mebs_fb[i])
+        euclidean_rc = distance.euclidean(true_meb, mebs_rc[i])
+        hamming_fa = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_fa[i]))
+        hamming_fb = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_fb[i]))
+        hamming_rc = distance.hamming(true_meb, map(lambda x: 1 if x > 0.5 else 0, mebs_rc[i]))
 
-with open('howfar_meb_subject_'+subject+'.csv', 'w') as f:
-    f.write('euclidean_fa,euclidean_fb,euclidean_rc,hamming_fa,hamming_fb,hamming_rc')
-    for row in total_data:
-        f.write(','.join(map(str,row))+'\n')
+        total_data.append((euclidean_fa, euclidean_fb, euclidean_rc,hamming_fa,hamming_fb,hamming_rc))
+
+    with open('data_howfar_meb_subject_'+subject+'.csv', 'w') as f:
+        f.write('euclidean_fa,euclidean_fb,euclidean_rc,hamming_fa,hamming_fb,hamming_rc\n')
+        for row in total_data:
+            f.write(','.join(map(str,row))+'\n')
