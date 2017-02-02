@@ -14,7 +14,7 @@ name: Tesla K40m
 major: 3 minor: 5 memoryClockRate (GHz) 0.745
 pciBusID 0000:03:00.0
 Total memory: 11.25GiB
-Free memory: 8.22GiB
+Free memory: 11.12GiB
 I tensorflow/core/common_runtime/gpu/gpu_init.cc:102] Found device 2 with properties: 
 name: Tesla K40m
 major: 3 minor: 5 memoryClockRate (GHz) 0.745
@@ -26,7 +26,7 @@ name: Tesla K40m
 major: 3 minor: 5 memoryClockRate (GHz) 0.745
 pciBusID 0000:83:00.0
 Total memory: 11.25GiB
-Free memory: 8.22GiB
+Free memory: 11.12GiB
 I tensorflow/core/common_runtime/gpu/gpu_init.cc:59] cannot enable peer access from device ordinal 0 to device ordinal 2
 I tensorflow/core/common_runtime/gpu/gpu_init.cc:59] cannot enable peer access from device ordinal 0 to device ordinal 3
 I tensorflow/core/common_runtime/gpu/gpu_init.cc:59] cannot enable peer access from device ordinal 1 to device ordinal 2
@@ -44,39 +44,4 @@ I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow devi
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:1) -> (device: 1, name: Tesla K40m, pci bus id: 0000:03:00.0)
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:2) -> (device: 2, name: Tesla K40m, pci bus id: 0000:82:00.0)
 I tensorflow/core/common_runtime/gpu/gpu_device.cc:755] Creating TensorFlow device (/gpu:3) -> (device: 3, name: Tesla K40m, pci bus id: 0000:83:00.0)
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
-subject*00989*has*no*fbs*
+Loading ALL weights.

@@ -30,7 +30,7 @@ class VGGFace(object):
         self.layers = []
         self._setup_layers_description()
 
-        self.sess = tf.InteractiveSession()
+        self.sess = tf.InteractiveSession(config=tf.ConfigProto(allow_soft_placement=True))
         
     def _setup_layers_description(self):
         '''

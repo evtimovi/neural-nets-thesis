@@ -14,7 +14,7 @@ and train a neural network that maps faces to MEB codes
 (the MEB codes will be provided externally)
 '''
 class VGGFaceMEB(parent.VGGFace):
-    def __init__(self, batch_size, gpu="/gpu:0", keysize=256, max_checkpoints=20):
+    def __init__(self, batch_size, gpu="/gpu:0", keysize=256, max_checkpoints=160):
         self.gpu = gpu
         with parent.tf.device(self.gpu):
              # initialize everything in the parent
@@ -44,12 +44,14 @@ class VGGFaceMEB(parent.VGGFace):
         This method initializes the network weights from 
         a .ckpt file to be found in path
         '''
-        self.restorer.restore(self.sess, path)
-        self.weights_loaded = True
+        with parent.tf.device(self.gpu):
+            self.restorer.restore(self.sess, path)
+            self.weights_loaded = True
 
     def load_all_weights(self, path):
-        self.saver.restore(self.sess, path)
-        self.weights_loaded = True
+        with parent.tf.device(self.gpu):
+            self.saver.restore(self.sess, path)
+            self.weights_loaded = True
     
     def train_batch(self, inputs_arr, targets_arr,
                     learning_rate,
@@ -79,7 +81,6 @@ class VGGFaceMEB(parent.VGGFace):
         '''
 
         with parent.tf.device(self.gpu):
-
             y_target = self.target_code
             y_output = self.get_output()
         

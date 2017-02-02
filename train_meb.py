@@ -46,9 +46,9 @@ def epoch(network, ftos, stom, epoch_n):
         print 'trained batch', batch_n, 'in epoch', epoch_n, 'loss:', loss
         sys.stdout.flush()
 
-#        if CHECKPOINT > 0 and i > 0 and i%CHECKPOINT == 0:
-#            save_filename = 'weights_epoch_' + str(epoch_n) + '_batch_' + str(batch_n) + '.ckpt'
-#            network.save_weights(os.path.join(save_path_weights, save_filename))
+        if CHECKPOINT > 0 and i > 0 and i%CHECKPOINT == 0:
+            save_filename = 'weights_epoch_' + str(epoch_n) + '_batch_' + str(batch_n) + '.ckpt'
+            network.save_weights(os.path.join(save_path_weights, save_filename))
 
     network.save_weights(os.path.join(save_path_weights, 'weights_epoch_'+str(epoch_n)+'_final.ckpt'))
 
@@ -64,8 +64,14 @@ if __name__ == '__main__':
     for s in SUBJ_FOR_TRAINING:
         stom_new[s] = stom[s]
 
-    network = vggn.VGGFaceMEB(BATCH_SIZE, gpu="/gpu:2")
-    network.load_vgg_weights(os.path.realpath(VGG_WEIGHTS_PATH))
+    network = vggn.VGGFaceMEB(BATCH_SIZE, gpu=GPU)
+
+    if VGG_WEIGHTS_PATH != "":
+        sys.stderr.write("Loading ONLY vgg weights.\n")
+        network.load_vgg_weights(os.path.realpath(VGG_WEIGHTS_PATH))
+    else:
+        sys.stderr.write("Loading ALL weights.\n")
+        network.load_all_weights(os.path.realpath(ALL_WEIGHTS_PATH))
     
     start = time.time()
     for i in xrange(0,EPOCHS):
