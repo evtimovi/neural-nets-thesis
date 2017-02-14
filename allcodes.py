@@ -49,16 +49,16 @@ def do_mebs_for_subject(subject_id, img_code):
         # get the full path to the image
         fa_img_path = os.path.join(fa_path, img_name)
         favec = network.get_raw_output_for([p.load_adjust_avg(fa_img_path),])
-        tup = (subject_id,img_code,img_name,format_vector(favec),"")
+        tup = (subject_id,img_code,img_name,format_vector(favec))
         print ','.join(map(str,tup))
 
 with open(os.path.realpath('./datasplits/subjtomeb_colorferet.json'),'r') as f:
         stom = json.load(f)
 
-print 'subject_id,img_code,img_filename,raw_meb,raw_vgg'
+print 'subject_id,img_code,img_filename,raw_meb'
 for subject in subjects:
     true_meb=stom[str(subject).zfill(5)]
-    tup=(subject, "true", "true", format_vector(true_meb), "")
+    tup=(subject, "true", "true", format_vector(true_meb))
     print ','.join(map(str,tup))
 
     for code in ["fa","fb","rc"]:
