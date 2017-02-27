@@ -155,24 +155,26 @@ vanilla VGGFace implementation meant only for evaluation.
 '''
 class VGGFaceVanilla(parent.VGGFace):
 
-    def __init__(self):
+    def __init__(self, gpu):
+        self.gpu = gpu
+        with parent.tf.device(self.gpu):
+            # initialize everything in the parent
+            super(VGGFaceVanilla, self).__init__()
 
-        # initialize everything in the parent
-        super(VGGFaceVanilla, self).__init__()
+            # append an l2 layer
+            self.layers.append(('l2','37',4096,True))
 
-        # append an l2 layer
-        self.layers.append(('l2','37',4096,True))
-
-        # initialize everything else
-        self._setup_network_variables()
-        self.saver = parent.tf.train.Saver()
+            # initialize everything else
+            self._setup_network_variables()
+            self.saver = parent.tf.train.Saver()
     
     def load_weights(self, path):
         '''
         This method initializes the network weights from 
         a .ckpt file to be found in path
         '''
-        self.saver.restore(self.sess, path)
+        with parent.tf.device(self.gpu):
+            self.saver.restore(self.sess, path)
 
     def get_l2_vector(self, img): 
         '''
@@ -181,5 +183,47 @@ class VGGFaceVanilla(parent.VGGFace):
         '''
         # we appended the input placeholder to the beginning of the vars array
         # the actual variable there is in the second position
-        x_image = self.vars[0][1]
-        return self.get_output().eval(feed_dict={x_image:img})[0]
+        with parent.tf.device(self.gpu):
+            x_image = self.vars[0][1]
+            return self.get_output().eval(feed_dict={x_image:img})[0]
+
+'''
+This class inherits from the paretn VGGFace to build a 
+vanilla VGGFace implementation meant only for evaluation.
+The last layer of this network does not apply l2 
+normalization.
+'''
+class VGGFaceVanillaNoL2(parent.VGGFace):
+
+    def __init__(self, gpu):
+        self.gpu = gpu
+        with parent.tf.device(self.gpu):
+            # initialize everything in the parent
+            super(VGGFaceVanillaNoL2, self).__init__()
+
+            # append an l2 layer
+#            self.layers.append(('l2','37',4096,True))
+
+            # initialize everything else
+            self._setup_network_variables()
+            self.saver = parent.tf.train.Saver()
+    
+    def load_weights(self, path):
+        '''
+        This method initializes the network weights from 
+        a .ckpt file to be found in path
+        '''
+        with parent.tf.device(self.gpu):
+            self.saver.restore(self.sess, path)
+
+    def get_output_for_img(self, img): 
+        '''
+        This method runs img through the network to obtain
+        the unnormalized output.
+        '''
+        # we appended the input placeholder to the beginning of the vars array
+        # the actual variable there is in the second position
+        with parent.tf.device(self.gpu):
+            x_image = self.vars[0][1]
+            return self.get_output().eval(feed_dict={x_image:img})[0]
+
