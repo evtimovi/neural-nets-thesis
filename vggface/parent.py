@@ -147,7 +147,13 @@ class VGGFace(object):
             elif layer[0] == 'softmax':
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
             elif layer[0] == 'l2':
-                self.add_(name,tf.nn.l2_normalize(self.get_output(),0,),layer)
+#                self.add_(name,tf.nn.l2_normalize(self.get_output(),0,),layer)
+                x = self.get_output()
+                l2_op = tf.div(x,tf.sqrt(tf.reduce_sum(tf.square(x)))) 
+                self.add_(name,l2_op,layer)
+
+
+                
 
     # counts how many variables start with the same prefix
     # and then gives a string that's in the form prefix_number
