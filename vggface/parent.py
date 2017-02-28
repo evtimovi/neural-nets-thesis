@@ -139,21 +139,14 @@ class VGGFace(object):
                         op = tf.nn.relu
                     elif func == 'sigmoid':
                         op = tf.sigmoid
-#                    else:
-#                        op = tf.nn.xw_plus_b
-#                    op = tf.nn.relu_layer if relu else tf.nn.xw_plus_b
                     fc = op(tf.nn.bias_add(tf.matmul(feed_in, weights), biases), name=scope.name)
                     self.add_(name, fc,layer)
             elif layer[0] == 'softmax':
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
             elif layer[0] == 'l2':
-#                self.add_(name,tf.nn.l2_normalize(self.get_output(),0,),layer)
                 x = self.get_output()
                 l2_op = tf.div(x,tf.sqrt(tf.reduce_sum(tf.square(x)))) 
                 self.add_(name,l2_op,layer)
-
-
-                
 
     # counts how many variables start with the same prefix
     # and then gives a string that's in the form prefix_number
