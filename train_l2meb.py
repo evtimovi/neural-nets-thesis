@@ -16,9 +16,9 @@ PATH_STOM = './datasplits/subjtomeb_colorferet.json'
 PATH_FTOS =  './datasplits/fa_filepath_to_subject_colorferet.json'
 
 VGG_WEIGHTS_PATH = './vggface/weights/plain-vgg-trained.ckpt'
-#ALL_WEIGHTS_PATH = "./output/rc_subjects/weights/weights_epoch_15_final.ckpt" 
+ALL_WEIGHTS_PATH = ""
 
-EPOCHS = 2 
+EPOCHS = 20
 
 BATCH_SIZE = 4*49
 LEARNING_RATE = 0.02
@@ -89,6 +89,11 @@ def epoch(epoch_n):
 
         print 'trained batch', batch_n, 'in epoch', epoch_n, 'loss:', loss
         sys.stdout.flush()
+
+        if i%(len(all_paths)/4) == 0:
+            save_filename = 'weights_epoch_' + str(epoch_n) + '_batch_' + str(batch_n) + '.ckpt'
+            network.save_weights(os.path.join(save_path_weights, save_filename))
+    network.save_weights(os.path.join(save_path_weights, 'weights_epoch_'+str(epoch_n)+'_final.ckpt'))
 
 
 # ACTUAL PROCESS OF TRAINING
