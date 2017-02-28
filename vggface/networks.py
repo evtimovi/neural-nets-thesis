@@ -232,7 +232,7 @@ class VGGFaceVanillaNoL2(parent.VGGFace):
 This network applies normalization
 before passing to the MEB layer.
 '''
-class VGGFaceMEBWithL2:
+class VGGFaceMEBWithL2(parent.VGGFace):
     def __init__(self, batch_size, gpu="/gpu:0", keysize=256, max_checkpoints=160):
         self.gpu = gpu
         with parent.tf.device(self.gpu):
