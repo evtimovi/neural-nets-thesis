@@ -62,7 +62,7 @@ def do_code(code):
               'allvectors_'+code+'epoch_'+str(epoch_n)+'_batch_'+str(batch_n)+'.csv'),
               'w') as f:
         for subject in subjects:
-            f.write(str(subject)+",target,real,"+",".join(map(str,stom[subject])))
+            f.write(str(subject)+",target,real,"+",".join(map(str,stom[subject]))+"\n")
             do_mebs_for_subject(f,subject,code)
             sys.stdout.write("done with subject " + str(subject) + " with code " + code + " in epoch " + str(epoch_n) + " batch " + str(batch_n) + "\n")
             sys.stdout.flush()
