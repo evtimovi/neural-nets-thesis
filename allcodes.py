@@ -25,7 +25,8 @@ network=n.VGGFaceMEB(1, gpu="/gpu:"+str(GPU))
 network.load_all_weights(WEIGHTS_PATH)
 
 def format_vector(vec):
-    return '{' + ','.join(map(str,vec)) + '}'
+#    return '{' + ','.join(map(str,vec)) + '}'
+    return ','.join(map(str,vec))
 
 def sample_img_names(directory, sample_size):
     all_imgs = os.listdir(directory)
