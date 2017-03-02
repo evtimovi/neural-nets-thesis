@@ -1,0 +1,1075 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     39486,       1067]
+NotebookOptionsPosition[     37194,        991]
+NotebookOutlinePosition[     37559,       1007]
+CellTagsIndexPosition[     37516,       1004]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[TextData[StyleBox["Legend for coloring", "Section"]], "Section",
+ CellChangeTimes->{{3.695850564653019*^9, 3.695850575896942*^9}, {
+  3.695850708085136*^9, 3.695850708893023*^9}}],
+
+Cell["\<\
+Flow of the discussion and labels for the action being performed.\
+\>", "Text",
+ CellChangeTimes->{{3.6958505778347178`*^9, 3.695850611475469*^9}},
+ Background->RGBColor[0.87, 0.94, 1]],
+
+Cell["Technical comments (mostly on the Mathematica commands).", "Text",
+ CellChangeTimes->{{3.695850626658449*^9, 3.69585063854694*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell["Comments and thoughts on what we are seeing.", "Text",
+ CellChangeTimes->{{3.695850110428219*^9, 3.695850121002524*^9}, {
+  3.695850215775908*^9, 3.695850262928747*^9}, {3.695850301305097*^9, 
+  3.6958505174638042`*^9}, {3.695850667590382*^9, 3.695850673316639*^9}},
+ Background->RGBColor[0.94, 0.91, 0.88]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Technical Setup", "Section",
+ CellChangeTimes->{{3.695850690876594*^9, 3.695850693172535*^9}}],
+
+Cell["\<\
+Define some system-specific variables here - e.g. the base path for where the \
+data files are stored. For some reason, Mathematica does not import the file \
+successfully if it\[CloseCurlyQuote]s just located in the same folder and the \
+path is omitted.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "pathBase", "=", 
+   "\"\</Users/ivanevtimov/GDrive-Laf/THESIS/Results with more \
+subjects/\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.695848948744624*^9, 3.695848975937291*^9}}],
+
+Cell["\<\
+Helper function in order to get the filename for the data for any epoch, \
+batch, and string easily.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.697331418601653*^9, 3.697331440319373*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"getName", "[", 
+   RowBox[{"code_", ",", "epoch_", ",", "batch_"}], "]"}], ":=", 
+  RowBox[{"\"\<allvectors_\>\"", "<>", "code", "<>", "\"\<epoch_\>\"", "<>", 
+   RowBox[{"ToString", "[", "epoch", "]"}], "<>", "\"\<_\>\"", " ", "<>", 
+   RowBox[{"If", "[", 
+    RowBox[{
+     RowBox[{"batch", "\[Equal]", "\"\<final\>\""}], ",", "\"\<final\>\"", 
+     ",", 
+     RowBox[{"\"\<batch_\>\"", "<>", 
+      RowBox[{"ToString", "[", "batch", "]"}]}]}], "]"}], "<>", 
+   "\"\<.csv\>\""}]}]], "Input",
+ CellChangeTimes->{{3.6973314444252253`*^9, 3.697331457616457*^9}, {
+  3.697331511333789*^9, 3.697331535388105*^9}, {3.6973315814382067`*^9, 
+  3.697331613863694*^9}, {3.697331659859755*^9, 3.697331660770111*^9}, {
+  3.697331699227928*^9, 3.697331710684225*^9}, {3.6973317887372437`*^9, 
+  3.697331789143898*^9}}],
+
+Cell["\<\
+Define function functions for accessing the data. Note that these functions \
+(or most of them) do not work over the index but over the row itself provided \
+as an argument. That is because functions such as Select in Mathematica \
+provide for that.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell["\<\
+First some functions to be used in the Select clause to pick out subjects and \
+codes.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"isTarget", "[", "r_", "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"r", "[", 
+       RowBox[{"[", "2", "]"}], "]"}], "\[Equal]", "\"\<true\>\""}], "||", 
+     RowBox[{
+      RowBox[{"r", "[", 
+       RowBox[{"[", "2", "]"}], "]"}], "\[Equal]", "\"\<target\>\""}]}]}], 
+   ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "checks", " ", "if", " ", "the", " ", "given", " ", "row", " ", "contains",
+     " ", "the", " ", "target", " ", 
+    RowBox[{"(", "real", ")"}], " ", "MEB", " ", "code"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"isSubject", "[", 
+     RowBox[{"subjid_", ",", "r_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"r", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "\[Equal]", "subjid"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "checks", " ", "if", " ", "the", " ", "given", " ", "row", " ", "belongs", 
+    " ", "to", " ", "the", " ", "given", " ", "subject"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"isSubjectAndNotTarget", "[", 
+     RowBox[{"subjid_", ",", "r_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"isSubject", "[", 
+      RowBox[{"subjid", ",", "r"}], "]"}], "&&", 
+     RowBox[{"!", 
+      RowBox[{"isTarget", "[", "r", "]"}]}]}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "used", " ", "in", " ", "selecting", " ", "all", " ", "MEBs", " ", "for", 
+    " ", "a", " ", "given", " ", "subject"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"isTargetForSubject", "[", 
+     RowBox[{"subjid_", ",", "r_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"isSubject", "[", 
+      RowBox[{"subjid", ",", "r"}], "]"}], "&&", 
+     RowBox[{"isTarget", "[", "r", "]"}]}]}], ";"}], 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "used", " ", "in", " ", "getting", " ", "the", " ", "real", " ", "MEB", 
+    " ", "for", " ", "the", " ", "given", " ", "subject"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"isImgCode", "[", 
+    RowBox[{"code_", ",", "r_"}], "]"}], ":=", 
+   RowBox[{
+    RowBox[{"r", "[", 
+     RowBox[{"[", "2", "]"}], "]"}], "\[Equal]", "code"}]}], ";"}]}], "Input",\
+
+ CellChangeTimes->CompressedData["
+1:eJwdzGlImgEAxnHLUVmrKJRqbR1ELEroZhQONCorwkq2TggrshWxAmkFi+rL
+YO2wL6lJRYd0l2y4rrmiyy6j2KgWNlEjIrVtbdHoAN37vB8efp+ef3BpDb/c
+kUKhPCQGPe7Q3TpbrZzh7w4+MPp2lAl5UnUkvJtmzIcerL1iSJNVaU/eWDkD
+1MZtuNoXeuD3zso53IkiFcY+1UOpxd8IWSHsE3h+lnIDYzKFdvhokOV6j9Cm
+MnNh+ZCcD4taD3Ph7G+FEFZbDFWQ9SFIBN1rcl7CJYv4NWTTKtpgu8RMquMu
+SmB4LXcYPmcL1PAJs24eKt+WLMMZWcdXODe9rYO1BhNpl+HCCLuP3Uwwxs4x
+kx3nZCs8v1m9goIgdzt0tKVS/QkH88ZIu/Rh4/fxYyqUULNHV0FvHuMTPN75
+8xluxaVSHhA2+X6Jh9XGV8lwQbuRDnsem0ltGnku/JVRVgHrN1vEMFKvaYMf
+s/Yl0PNbmRS+qBT1wV21Uz+MTfqngrre00lo59HWIF+k3ILrhdemcML5y5Ej
+OPXDdgZDtAE/YfbE1F/okke/gA0tAmoEYXQSwws2X4cyoHQlKxD6iBX5UMYt
+KoBH7xNGEglXnsmV8D/jwDpB
+  "]],
+
+Cell["Next, some functions to select the various MEBs.", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.697367807635425*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"meb", "[", "r_", "]"}], ":=", 
+    RowBox[{"r", "[", 
+     RowBox[{"[", 
+      RowBox[{"4", ";;", "259"}], "]"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "used", " ", "to", " ", "get", " ", "just", " ", "the", " ", "MEB", " ", 
+     "from", " ", "the", " ", "row"}], ";", " ", 
+    RowBox[{
+    "the", " ", "first", " ", "3", " ", "entries", " ", "are", " ", 
+     "metadata", " ", "such", " ", "as", " ", "subjid", " ", "and", " ", 
+     "imgcode"}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"quantize", "[", "x_", "]"}], ":=", 
+    RowBox[{"If", "[", 
+     RowBox[{
+      RowBox[{"x", ">", "0.5"}], ",", "1", ",", "0"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"quantize", " ", "a", " ", "single", " ", "number"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"quantizedMEB", "[", "r_", "]"}], ":=", 
+    RowBox[{"quantize", "/@", 
+     RowBox[{"meb", "[", "r", "]"}]}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "return", " ", "the", " ", "quantized", " ", "MEB", " ", "for", " ", "the",
+     " ", "row"}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"targetMEBForSubject", "[", 
+     RowBox[{"subjid_", ",", "data_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"meb", "/@", 
+       RowBox[{"Select", "[", 
+        RowBox[{"data", ",", 
+         RowBox[{
+          RowBox[{"isTargetForSubject", "[", 
+           RowBox[{"subjid", ",", "#"}], "]"}], "&"}]}], "]"}]}], ")"}], "[", 
+     
+     RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "  ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "find", " ", "the", " ", "real", " ", "MEB", " ", "of", " ", "the", " ", 
+     "given", " ", "subject"}], ";", " ", 
+    RowBox[{"returns", " ", "just", " ", "a", " ", "single", " ", "list"}]}], 
+   " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"allNetworkMEBsForSubject", "[", 
+     RowBox[{"subjid_", ",", "data_"}], "]"}], ":=", 
+    RowBox[{"quantizedMEB", "/@", 
+     RowBox[{"Select", "[", 
+      RowBox[{"data", ",", 
+       RowBox[{
+        RowBox[{"isSubjectAndNotTarget", "[", 
+         RowBox[{"subjid", ",", "#"}], "]"}], "&"}]}], "]"}]}]}], ";"}], " ", 
+  
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "find", " ", "all", " ", "the", " ", "MEBs", " ", "for", " ", "the", " ", 
+     "given", " ", "subject"}], ";", " ", 
+    RowBox[{"returns", " ", "a", " ", "list", " ", "of", " ", "lists"}]}], 
+   " ", "*)"}]}]}], "Input"],
+
+Cell["Next, some functions to get matching scores.", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}, {3.6973678160853243`*^9, 
+  3.697367825291918*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"subjectMatchingScore", "[", 
+     RowBox[{"subjid_", ",", "data_"}], "]"}], ":=", 
+    RowBox[{"Count", "[", 
+     RowBox[{
+      RowBox[{"allNetworkMEBsForSubject", "[", 
+       RowBox[{"subjid", ",", "data"}], "]"}], ",", 
+      RowBox[{"targetMEBForSubject", "[", 
+       RowBox[{"subjid", ",", "data"}], "]"}]}], "]"}]}], ";"}], 
+  "  "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"subjectImposterMatchingScore", "[", 
+     RowBox[{"subjid_", ",", "imposterid_", ",", "data_"}], "]"}], ":=", 
+    RowBox[{"Count", "[", 
+     RowBox[{
+      RowBox[{"allNetworkMEBsForSubject", "[", 
+       RowBox[{"imposterid", ",", "data"}], "]"}], ",", 
+      RowBox[{"targetMEBForSubject", "[", 
+       RowBox[{"subjid", ",", "data"}], "]"}]}], "]"}]}], ";"}], "  ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "finds", " ", "the", " ", "matching", " ", "score", " ", "for", " ", 
+     "the", " ", "subject", " ", "by", " ", "counting", " ", "how", " ", 
+     "many", " ", "nework"}], "-", 
+    RowBox[{
+    "produced", " ", "MEBs", " ", "match", " ", "the", " ", "real", " ", 
+     "MEB"}]}], " ", "*)"}]}]}], "Input"],
+
+Cell["\<\
+These functions get some listing of subjects that we can work with for the \
+evaluation, including imposter pairs and such.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}, {3.6973678160853243`*^9, 
+  3.697367868717016*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"allsubjectsSorted", "[", "data_", "]"}], ":=", 
+    RowBox[{"Sort", "[", 
+     RowBox[{"DeleteDuplicates", "[", 
+      RowBox[{"data", "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", "1"}], "]"}], "]"}], "]"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "gets", " ", "a", " ", "list", " ", "of", " ", "all", " ", "subjects", " ",
+     "in", " ", "a", " ", "sorted", " ", "order"}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"allsubjectsShuffled", "[", "data_", "]"}], ":=", 
+    RowBox[{"RandomSample", "[", 
+     RowBox[{"allsubjectsSorted", "[", "data", "]"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{
+    "gets", " ", "a", " ", "list", " ", "of", " ", "all", " ", "subjects", 
+     " ", "in", " ", "a", " ", "SHUFFLED", " ", "order"}], ",", " ", 
+    RowBox[{"used", " ", "for", " ", "imposter", " ", "generation"}]}], " ", 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"imposterPairs", "[", "data_", "]"}], ":=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"allsubjectsSorted", "[", "data", "]"}], ")"}], "[", 
+        RowBox[{"[", "i", "]"}], "]"}], ",", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"allsubjectsShuffled", "[", "data", "]"}], ")"}], "[", 
+        RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", " ", "1", ",", 
+       RowBox[{"Length", "[", 
+        RowBox[{"allsubjectsSorted", "[", "data", "]"}], "]"}]}], "}"}]}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.6973677922483397`*^9, 3.697367840928968*^9}, {
+  3.697367876553668*^9, 3.6973678797585783`*^9}}],
+
+Cell[TextData[{
+ "Functions to calculate matching scores ",
+ StyleBox["for genuines",
+  FontWeight->"Bold",
+  FontSlant->"Italic"],
+ " across all subjects."
+}], "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}, {3.6973678160853243`*^9, 
+  3.6973678954938374`*^9}, {3.697371070019114*^9, 3.6973710770582733`*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"matchingScoresForAllSubjects", "[", 
+     RowBox[{"subjects_", ",", "data_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"subjectMatchingScore", "[", 
+        RowBox[{"#", ",", "data"}], "]"}], "&"}], ")"}], "/@", "subjects"}]}],
+    ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Gives", " ", "a", " ", "list", " ", "of", " ", "the", " ", "matching", 
+    " ", "scores", " ", "for", " ", "all", " ", 
+    RowBox[{"subjects", "."}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"matchingScoresPairs", "[", "data_", "]"}], ":=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"allsubjectsSorted", "[", "data", "]"}], "[", 
+         RowBox[{"[", "i", "]"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"matchingScoresForAllSubjects", "[", "data", "]"}], "[", 
+         RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"i", ",", "1", ",", 
+        RowBox[{"Length", "[", 
+         RowBox[{"allsubjectsSorted", "[", "data", "]"}], "]"}]}], "}"}]}], 
+     "]"}]}], ";"}], 
+  RowBox[{"(*", " ", 
+   RowBox[{"Gives", " ", "a", " ", "list", " ", "of", " ", "pairs", " ", 
+    RowBox[{"{", 
+     RowBox[{"subjid", ",", " ", "matching_score"}], "}"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"genuineAndImposterTuplesHelper", "[", 
+      RowBox[{"subjectPairs_", ",", "data_"}], "]"}], ":=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"subjectPairs", "[", 
+            RowBox[{"[", 
+             RowBox[{"All", ",", "1"}], "]"}], "]"}], ")"}], "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", " ", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t\t                                      ", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"matchingScoresForAllSubjects", "[", 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{"subjectPairs", "[", 
+               RowBox[{"[", 
+                RowBox[{"All", ",", "1"}], "]"}], "]"}], ")"}], ",", "data"}],
+             "]"}], ")"}], "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t\t                                      ", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{"subjectPairs", "[", 
+            RowBox[{"[", 
+             RowBox[{"All", ",", "2"}], "]"}], "]"}], ")"}], "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", "\[IndentingNewLine]", 
+         "\t\t\t\t\t\t\t\t                                               ", 
+         RowBox[{
+          RowBox[{"(", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"subjectImposterMatchingScore", "[", 
+               RowBox[{
+                RowBox[{"#", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}], ",", 
+                RowBox[{"#", "[", 
+                 RowBox[{"[", "2", "]"}], "]"}], ",", "data"}], "]"}], "&"}], 
+             ")"}], "/@", 
+            RowBox[{"(", "subjectPairs", ")"}]}], ")"}], "[", 
+          RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]",
+        "\t\t\t\t\t\t\t\t\t                                        ", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", 
+         RowBox[{"Length", "[", "subjectPairs", "]"}]}], "}"}]}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"genuineAndImposterTuples", "[", "data_", "]"}], ":=", 
+     RowBox[{"genuineAndImposterTuplesHelper", "[", 
+      RowBox[{
+       RowBox[{"imposterPairs", "[", "data", "]"}], ",", "data"}], "]"}]}]}], 
+   "*)"}]}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.69736791589533*^9, 3.6973679237760153`*^9}, {
+  3.697368148894084*^9, 3.697368173854751*^9}, {3.69736888427324*^9, 
+  3.69736888721577*^9}, {3.697370291289027*^9, 3.697370292919787*^9}, {
+  3.697370843022377*^9, 3.697370853885323*^9}, {3.6973710445088673`*^9, 
+  3.6973710655651627`*^9}}],
+
+Cell["\<\
+Finally, these functions give us the data in a format of tuples of the form \
+(subjid, genuine_score, imposterid, imposter_score). The imposters are chosen \
+randomly in each run.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}, {3.6973678160853243`*^9, 
+  3.6973678954938374`*^9}, {3.697371070019114*^9, 3.6973710770582733`*^9}, {
+  3.697371358395001*^9, 3.697371401747113*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"genuineAndImposterDataInTuples", "[", 
+   RowBox[{"subjectPairs_", ",", "genuineScores_", ",", "imposterScores_"}], 
+   "]"}], ":=", 
+  RowBox[{"Table", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"subjectPairs", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "1"}], "]"}], "]"}], ")"}], "[", 
+       RowBox[{"[", "i", "]"}], "]"}], ",", 
+      RowBox[{"genuineScores", "[", 
+       RowBox[{"[", "i", "]"}], "]"}], ",", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"subjectPairs", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "2"}], "]"}], "]"}], ")"}], "[", 
+       RowBox[{"[", "i", "]"}], "]"}], ",", 
+      RowBox[{"imposterScores", "[", 
+       RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"i", ",", 
+      RowBox[{"Length", "[", "subjectPairs", "]"}]}], "}"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.6973704713412313`*^9, 3.6973706246547823`*^9}, 
+   3.697370671658127*^9, {3.697370993643567*^9, 3.697371000273035*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"allGenuineAndImposterScoresFromData", "[", "data_", "]"}], ":=", 
+  RowBox[{"(", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Clear", "[", "pairs", "]"}], ";", " ", "\[IndentingNewLine]", 
+    RowBox[{"pairs", "=", 
+     RowBox[{"imposterPairs", "[", "data", "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"genuineAndImposterDataInTuples", "[", 
+     RowBox[{"pairs", ",", 
+      RowBox[{"matchingScoresForAllSubjects", "[", 
+       RowBox[{
+        RowBox[{"pairs", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", "1"}], "]"}], "]"}], ",", "data"}], "]"}], ",", 
+      " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"subjectImposterMatchingScore", "[", 
+           RowBox[{
+            RowBox[{"#", "[", 
+             RowBox[{"[", "1", "]"}], "]"}], ",", 
+            RowBox[{"#", "[", 
+             RowBox[{"[", "2", "]"}], "]"}], ",", "data"}], "]"}], "&"}], 
+         ")"}], "/@", 
+        RowBox[{"(", "pairs", ")"}]}], ")"}]}], "]"}]}], ")"}]}]], "Input",
+ CellChangeTimes->{{3.697371299553843*^9, 3.697371342900865*^9}}],
+
+Cell["\<\
+More functions to calculate the confusion matrix, GAR\[CloseCurlyQuote]s, FAR\
+\[CloseCurlyQuote]s, etc. -- these will work with data in the format output \
+by allGenuineAndImposterScoresFromData, i.e. the 4-tuple format.\
+\>", "Text",
+ CellChangeTimes->{{3.695849021746048*^9, 3.695849036946546*^9}, {
+  3.695850597291189*^9, 3.6958506035378027`*^9}, {3.695850769505541*^9, 
+  3.6958507880387897`*^9}, {3.696023570255184*^9, 3.6960235981810303`*^9}, {
+  3.696023635407834*^9, 3.696023661814063*^9}, {3.696026630952129*^9, 
+  3.696026644750987*^9}, {3.697333751803813*^9, 3.697333780884739*^9}, {
+  3.697367763675489*^9, 3.6973677803628283`*^9}, {3.6973678160853243`*^9, 
+  3.6973678954938374`*^9}, {3.697371070019114*^9, 3.6973710770582733`*^9}, {
+  3.697371358395001*^9, 3.697371401747113*^9}, {3.697400980605628*^9, 
+  3.697401043780719*^9}},
+ Background->RGBColor[0.9, 1, 1]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"genuineScores", "[", "resultsTuplesData_", "]"}], ":=", 
+   RowBox[{"resultsTuplesData", "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", "2"}], "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"imposterScores", "[", "resultsTuplesData_", "]"}], ":=", 
+   RowBox[{"resultsTuplesData", "[", 
+    RowBox[{"[", 
+     RowBox[{"All", ",", "4"}], "]"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"truePositive", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   RowBox[{"Fold", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"#2", ">", "threshold"}], ",", 
+        RowBox[{"#1", "+", "1"}], ",", "#1"}], "]"}], "&"}], ",", "0", ",", 
+     RowBox[{"genuineScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"falseNegative", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   RowBox[{"Fold", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"#2", "<=", "threshold"}], ",", 
+        RowBox[{"#1", "+", "1"}], ",", "#1"}], "]"}], "&"}], ",", "0", ",", 
+     RowBox[{"genuineScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"trueNegative", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   RowBox[{"Fold", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"#2", "<=", "threshold"}], ",", 
+        RowBox[{"#1", "+", "1"}], ",", "#1"}], "]"}], "&"}], ",", "0", ",", 
+     RowBox[{"imposterScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"falsePositive", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   RowBox[{"Fold", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"If", "[", 
+       RowBox[{
+        RowBox[{"#2", ">", "threshold"}], ",", 
+        RowBox[{"#1", "+", "1"}], ",", "#1"}], "]"}], "&"}], ",", "0", ",", 
+     RowBox[{"imposterScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"gar", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   FractionBox[
+    RowBox[{"truePositive", "[", 
+     RowBox[{"resultsTuplesData", ",", "threshold"}], "]"}], 
+    RowBox[{"Length", "[", "resultsTuplesData", "]"}]]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"far", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   FractionBox[
+    RowBox[{"falsePositive", "[", 
+     RowBox[{"resultsTuplesData", ",", "threshold"}], "]"}], 
+    RowBox[{"Length", "[", "resultsTuplesData", "]"}]]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"frr", "[", 
+    RowBox[{"resultsTuplesData_", ",", "threshold_"}], "]"}], ":=", 
+   FractionBox[
+    RowBox[{"falseNegative", "[", 
+     RowBox[{"resultsTuplesData", ",", "threshold"}], "]"}], 
+    RowBox[{"Length", "[", "resultsTuplesData", "]"}]]}], ";"}]}], "Input",
+ CellChangeTimes->{{3.69740100836029*^9, 3.6974011446640053`*^9}, {
+  3.697401248149468*^9, 3.6974012516675673`*^9}, {3.697401851263797*^9, 
+  3.6974018615893993`*^9}, {3.6974022279025908`*^9, 3.697402230060083*^9}, {
+  3.6974028197455378`*^9, 3.6974028385125933`*^9}, {3.6974028692590446`*^9, 
+  3.697402898818714*^9}, {3.6974029335253363`*^9, 3.697402987445756*^9}, {
+  3.697403085954893*^9, 3.6974030898574877`*^9}, {3.6974034264940023`*^9, 
+  3.6974034449969788`*^9}, {3.697403482977364*^9, 3.697403515760474*^9}, {
+  3.6974035479528227`*^9, 3.697403635331787*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"garAt0Far", "[", "resultsTuplesData_", "]"}], ":=", 
+  RowBox[{"(", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Clear", "[", 
+     RowBox[{
+     "allscores", ",", "garsList", ",", "farsList", ",", "garFarPairs", ",", 
+      "only0Fars"}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"allscores", "=", 
+     RowBox[{"Join", "[", 
+      RowBox[{
+       RowBox[{"genuineScores", "[", "resultsTuplesData", "]"}], ",", 
+       RowBox[{"imposterScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"garsList", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"gar", "[", 
+        RowBox[{"resultsTuplesData", ",", "#"}], "]"}], "&"}], "/@", 
+      "allscores"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"farsList", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"far", "[", 
+        RowBox[{"resultsTuplesData", ",", "#"}], "]"}], "&"}], "/@", 
+      "allscores"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"garFarPairs", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"garsList", "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", 
+         RowBox[{"farsList", "[", 
+          RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", 
+         RowBox[{"Length", "[", "allscores", "]"}]}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"only0Fars", "=", 
+     RowBox[{"Select", "[", 
+      RowBox[{"garFarPairs", ",", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"#", "[", 
+          RowBox[{"[", "2", "]"}], "]"}], "<", "0.0000001"}], "&"}]}], 
+      "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"N", "[", 
+     RowBox[{"Max", "[", 
+      RowBox[{"only0Fars", "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", "1"}], "]"}], "]"}], "]"}], "]"}]}], 
+   "\[IndentingNewLine]", ")"}]}]], "Input",
+ CellChangeTimes->{{3.697403671799939*^9, 3.697403698926627*^9}, {
+  3.6974037942980547`*^9, 3.697403828720755*^9}, {3.69740387376458*^9, 
+  3.697403985014831*^9}, {3.697404020834564*^9, 3.697404051177046*^9}, {
+  3.697404302478901*^9, 3.6974045063207703`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"eer", "[", "resultsTuplesData_", "]"}], ":=", 
+  RowBox[{"(", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Clear", "[", 
+     RowBox[{
+     "allscores", ",", "frrsList", ",", "farsList", ",", "frrFarDiffTriples", 
+      ",", "minDiff"}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"allscores", "=", 
+     RowBox[{"Join", "[", 
+      RowBox[{
+       RowBox[{"genuineScores", "[", "resultsTuplesData", "]"}], ",", 
+       RowBox[{"imposterScores", "[", "resultsTuplesData", "]"}]}], "]"}]}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"frrsList", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"frr", "[", 
+        RowBox[{"resultsTuplesData", ",", "#"}], "]"}], "&"}], "/@", 
+      "allscores"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"farsList", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"far", "[", 
+        RowBox[{"resultsTuplesData", ",", "#"}], "]"}], "&"}], "/@", 
+      "allscores"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"frrFarDiffTriples", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"frrsList", "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", 
+         RowBox[{"farsList", "[", 
+          RowBox[{"[", "i", "]"}], "]"}], ",", 
+         RowBox[{"Abs", "[", 
+          RowBox[{
+           RowBox[{"frrsList", "[", 
+            RowBox[{"[", "i", "]"}], "]"}], "-", 
+           RowBox[{"farsList", "[", 
+            RowBox[{"[", "i", "]"}], "]"}]}], "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", 
+         RowBox[{"Length", "[", "allscores", "]"}]}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"minDiff", "=", 
+     RowBox[{"Min", "[", 
+      RowBox[{"frrFarDiffTriples", "[", 
+       RowBox[{"[", 
+        RowBox[{"All", ",", "3"}], "]"}], "]"}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"N", "[", 
+     RowBox[{"DeleteDuplicates", "[", 
+      RowBox[{"Select", "[", 
+       RowBox[{"frrFarDiffTriples", ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"#", "[", 
+           RowBox[{"[", "3", "]"}], "]"}], "\[Equal]", "minDiff"}], "&"}]}], 
+       "]"}], "]"}], "]"}]}], "\[IndentingNewLine]", ")"}]}]], "Input",
+ CellChangeTimes->{{3.697403540370153*^9, 3.6974035459697933`*^9}, {
+  3.697404524276897*^9, 3.697404714231636*^9}, {3.69740477862834*^9, 
+  3.697404781546236*^9}, {3.697404887056005*^9, 3.697404890509688*^9}, {
+  3.697404929471328*^9, 3.697404980208268*^9}, {3.697405018259491*^9, 
+  3.697405164382913*^9}, {3.697405201128594*^9, 3.697405250713578*^9}, {
+  3.697405749069346*^9, 3.697405749498557*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Evaluations", "Section",
+ CellChangeTimes->{{3.697371418420302*^9, 3.697371445084139*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Sanity Check on Old Data", "Subsection",
+ CellChangeTimes->{{3.6973991800269003`*^9, 3.69739918309761*^9}}],
+
+Cell[BoxData[
+ RowBox[{"dataOld", "=", 
+  RowBox[{"Import", "[", 
+   RowBox[{"\"\<allcodes_data.csv\>\"", ",", 
+    RowBox[{"Path", "\[Rule]", "pathBase"}], ",", 
+    RowBox[{"HeaderLines", "\[Rule]", "1"}]}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.697399321909281*^9, 3.69739935126991*^9}}],
+
+Cell[BoxData[
+ RowBox[{"onlyFBs", "=", 
+  RowBox[{"Select", "[", 
+   RowBox[{"dataOld", ",", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"isTarget", "[", "#", "]"}], "||", 
+       RowBox[{"isImgCode", "[", 
+        RowBox[{"\"\<fb\>\"", ",", "#"}], "]"}]}], ")"}], "&"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.697399456423654*^9, 3.697399483242235*^9}, {
+  3.697399643483737*^9, 3.6973996820323057`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"evalTuplesOldData", "=", 
+  RowBox[{
+  "allGenuineAndImposterScoresFromData", "[", "onlyFBs", "]"}]}]], "Input",
+ CellChangeTimes->{{3.697399748437826*^9, 3.697399758859823*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"garAt0Far", "[", "evalTuplesOldData", "]"}]], "Input",
+ CellChangeTimes->{{3.697404494351858*^9, 3.6974044993774023`*^9}}],
+
+Cell[BoxData["0.7002398081534772`"], "Output",
+ CellChangeTimes->{{3.697404500011353*^9, 3.697404509359353*^9}, 
+   3.6974047394417543`*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"eer", "[", "evalTuplesOldData", "]"}]], "Input",
+ CellChangeTimes->{{3.697404612336111*^9, 3.697404616245205*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{"0.2997601918465228`", ",", "0.`", ",", "0.2997601918465228`"}], 
+   "}"}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.697404893812993*^9, 3.697404949683814*^9, {3.69740515839959*^9, 
+   3.697405167073509*^9}, {3.697405207389127*^9, 3.697405253352577*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"onlyRCs", "=", 
+  RowBox[{"Select", "[", 
+   RowBox[{"dataOld", ",", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"isTarget", "[", "#", "]"}], "||", 
+       RowBox[{"isImgCode", "[", 
+        RowBox[{"\"\<rc\>\"", ",", "#"}], "]"}]}], ")"}], "&"}]}], 
+   "]"}]}]], "Input",
+ CellChangeTimes->{{3.697405827701624*^9, 3.6974058301649446`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"evalTuplesRCSubjectsOldData", "=", 
+  RowBox[{
+  "allGenuineAndImposterScoresFromData", "[", "onlyRCs", "]"}]}]], "Input",
+ CellChangeTimes->{{3.697405806849801*^9, 3.697405840283367*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"garAt0Far", "[", "evalTuplesRCSubjectsOldData", "]"}]], "Input",
+ CellChangeTimes->{{3.697405861508938*^9, 3.697405869709197*^9}}],
+
+Cell[BoxData["0.3501199040767386`"], "Output",
+ CellChangeTimes->{3.697406048646276*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"eer", "[", "evalTuplesRCSubjectsOldData", "]"}]], "Input",
+ CellChangeTimes->{{3.697405873814891*^9, 3.697405879533539*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{
+   "0.5635491606714629`", ",", "0.002398081534772182`", ",", 
+    "0.5611510791366906`"}], "}"}], "}"}]], "Output",
+ CellChangeTimes->{3.697406048914702*^9}]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Epoch 10, Batch 0, FB pose", "Subsection",
+ CellChangeTimes->{{3.697371448292502*^9, 3.697371450404655*^9}, {
+  3.697371490798375*^9, 3.697371492789551*^9}}],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"dataFBEpoch10", "=", 
+    RowBox[{"Import", "[", 
+     RowBox[{
+      RowBox[{"getName", "[", 
+       RowBox[{"\"\<fb\>\"", ",", "10", ",", "0"}], "]"}], ",", 
+      RowBox[{"Path", "\[Rule]", "pathBase"}], ",", 
+      RowBox[{"HeaderLines", "\[Rule]", "0"}]}], "]"}]}], ";"}], 
+  "*)"}]], "Input",
+ CellChangeTimes->{{3.696022181509746*^9, 3.6960221910331087`*^9}, {
+   3.696022224183681*^9, 3.696022239842455*^9}, {3.6960222983803453`*^9, 
+   3.696022299821989*^9}, {3.696023529909492*^9, 3.696023530827716*^9}, {
+   3.696703048985108*^9, 3.696703050713252*^9}, 3.697331410234703*^9, {
+   3.697331619535904*^9, 3.697331631296412*^9}, {3.697331914740555*^9, 
+   3.697331915188136*^9}, {3.697333985293911*^9, 3.697333988082275*^9}, {
+   3.697402208157118*^9, 3.6974022207877483`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{"evalTuplesFBEpoch10Batch0", "=", 
+   RowBox[{
+   "allGenuineAndImposterScoresFromData", "[", "dataFBEpoch10", "]"}]}], 
+  "*)"}]], "Input",
+ CellChangeTimes->{{3.69737145935783*^9, 3.69737148643285*^9}, {
+  3.6974022146437893`*^9, 3.697402216995782*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1640, 1019},
+WindowMargins->{{Automatic, 1280}, {-127, Automatic}},
+FrontEndVersion->"11.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September \
+21, 2016)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 184, 2, 64, "Section"],
+Cell[767, 26, 195, 4, 46, "Text"],
+Cell[965, 32, 171, 2, 46, "Text"],
+Cell[1139, 36, 313, 4, 46, "Text"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1489, 45, 100, 1, 64, "Section"],
+Cell[1592, 48, 481, 9, 46, "Text"],
+Cell[2076, 59, 220, 6, 32, "Input"],
+Cell[2299, 67, 372, 7, 46, "Text"],
+Cell[2674, 76, 842, 17, 32, "Input"],
+Cell[3519, 95, 667, 11, 46, "Text"],
+Cell[4189, 108, 555, 10, 46, "Text"],
+Cell[4747, 120, 2930, 81, 117, "Input"],
+Cell[7680, 203, 507, 7, 46, "Text"],
+Cell[8190, 212, 2639, 77, 138, "Input"],
+Cell[10832, 291, 556, 8, 46, "Text"],
+Cell[11391, 301, 1206, 32, 75, "Input"],
+Cell[12600, 335, 643, 11, 46, "Text"],
+Cell[13246, 348, 1832, 49, 96, "Input"],
+Cell[15081, 399, 714, 14, 46, "Text"],
+Cell[15798, 415, 4172, 104, 222, "Input"],
+Cell[19973, 521, 798, 13, 46, "Text"],
+Cell[20774, 536, 1093, 30, 54, "Input"],
+Cell[21870, 568, 1138, 29, 96, "Input"],
+Cell[23011, 599, 889, 14, 46, "Text"],
+Cell[23903, 615, 3787, 100, 268, "Input"],
+Cell[27693, 717, 2188, 57, 201, "Input"],
+Cell[29884, 776, 2637, 66, 201, "Input"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32558, 847, 96, 1, 64, "Section"],
+Cell[CellGroupData[{
+Cell[32679, 852, 113, 1, 44, "Subsection"],
+Cell[32795, 855, 293, 6, 32, "Input"],
+Cell[33091, 863, 432, 12, 32, "Input"],
+Cell[33526, 877, 202, 4, 32, "Input"],
+Cell[CellGroupData[{
+Cell[33753, 885, 146, 2, 32, "Input"],
+Cell[33902, 889, 140, 2, 32, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34079, 896, 138, 2, 32, "Input"],
+Cell[34220, 900, 311, 7, 32, "Output"]
+}, Open  ]],
+Cell[34546, 910, 383, 11, 32, "Input"],
+Cell[34932, 923, 212, 4, 32, "Input"],
+Cell[CellGroupData[{
+Cell[35169, 931, 154, 2, 32, "Input"],
+Cell[35326, 935, 88, 1, 32, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35451, 941, 148, 2, 32, "Input"],
+Cell[35602, 945, 214, 6, 32, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35865, 957, 163, 2, 44, "Subsection"],
+Cell[36031, 961, 837, 17, 32, "Input"],
+Cell[36871, 980, 295, 7, 32, "Input"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
