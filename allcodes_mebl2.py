@@ -7,12 +7,10 @@ import sys
 import json
 
 # params
-GPU = 2
+GPU = 3
 WEIGHTS_BASEPATH = "./output/rc_subjects_with_l2/weights/"
-#EPOCHS_TO_EVAL = range(10,19)
-#BATCHES_TO_EVAL = [0,209]
-EPOCHS_TO_EVAL = [10]
-BATCHES_TO_EVAL = [0]
+EPOCHS_TO_EVAL = range(11,20)
+BATCHES_TO_EVAL = [0,209]
 
 OUTPUT_BASEPATH = "./output/rc_subjects_with_l2/all_vectors/"
 
@@ -64,24 +62,34 @@ def do_code(code):
         for subject in subjects:
             f.write(str(subject)+",target,real,"+",".join(map(str,stom[subject]))+"\n")
             do_mebs_for_subject(f,subject,code)
-            sys.stdout.write("done with subject " + str(subject) + " with code " + code + " in epoch " + str(epoch_n) + " batch " + str(batch_n) + "\n")
+            sys.stdout.write("done with subject " + str(subject) + " with code " + code + " in epoch " + str(epoch_n) + " batch "+ str(batch_n) + "\n")
             sys.stdout.flush()
+
+def do_code_final(code):
+    with open(os.path.join(OUTPUT_BASEPATH, 
+              'allvectors_'+code+'epoch_'+str(epoch_n)+'final.csv'),
+              'w') as f:
+        for subject in subjects:
+            f.write(str(subject)+",target,real,"+",".join(map(str,stom[subject]))+"\n")
+            do_mebs_for_subject(f,subject,code)
+            sys.stdout.write("done with subject " + str(subject) + " with code " + code + " in epoch " + str(epoch_n) + "batch: final" + "\n")
+            sys.stdout.flush()
+
 
 
 with open(os.path.realpath('./datasplits/subjtomeb_colorferet.json'),'r') as f:
     stom = json.load(f)
 
+network = n.VGGFaceMEBWithL2(1,gpu="/gpu:"+str(GPU))
 for epoch_n in EPOCHS_TO_EVAL:
     for batch_n in BATCHES_TO_EVAL:
         weights_fname = 'weights_epoch_' + str(epoch_n) + '_batch_' + str(batch_n) + '.ckpt'
         fullpath = os.path.join(WEIGHTS_BASEPATH, weights_fname)
-        network = n.VGGFaceMEBWithL2(1,gpu="/gpu:"+str(GPU))
         network.load_vgg_weights(fullpath)
         for code in ["fb","rc"]:
             do_code(code)
-    weights_fname = 'weights_epoch_' + str(epoch_n) + 'final.ckpt'
+    weights_fname = 'weights_epoch_' + str(epoch_n) + '_final.ckpt'
     fullpath = os.path.join(WEIGHTS_BASEPATH, weights_fname)
-    network = n.VGGFaceMEBWithL2(gpu="/gpu:"+str(GPU))
-    network.load_weights(fullpath)
+    network.load_vgg_weights(fullpath)
     for code in ["fb","rc"]:
-        do_code(code)
+        do_code_final(code)
