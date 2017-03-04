@@ -21,9 +21,9 @@ ALL_WEIGHTS_PATH = ""
 EPOCHS = 20
 
 BATCH_SIZE = 4*49
-LEARNING_RATE = 0.02
+LEARNING_RATE = 0.000001
 
-GPU = "/gpu:3"
+GPU = "/gpu:2"
 
 SAVE_FOLDER = './output/rc_subjects_with_l2'
 
