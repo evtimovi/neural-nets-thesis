@@ -23,7 +23,7 @@ class VGGFaceMEB(parent.VGGFace):
             # append a linear layer of keysize neurons
             # for linear the syntax is:
             # (layer_type, layer_number, num_neurons, activation_function)
-            self.layers.append(('linear', '41', keysize, 'sigmoid'))
+            self.layers.append(('linear', '41', keysize, 'sigmoid', False))
 
             # this will hold the MEB codes we are aiming to train to
             self.target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
@@ -237,10 +237,10 @@ class VGGFaceMEBWithL2(parent.VGGFace):
         self.gpu = gpu
         with parent.tf.device(self.gpu):
             super(VGGFaceMEBWithL2, self).__init__(batch_size)
-            self.layers.append(('l2','37'))
+            #self.layers.append(('l2','37'))
 
             # (layer_type, layer_number, num_neurons, activation_function)
-            self.layers.append(('linear', '41', keysize, 'sigmoid'))
+            self.layers.append(('linear', '41', keysize, 'sigmoid', False))
 
             # this will hold the MEB codes we are aiming to train to
             self.target_code = parent.tf.placeholder(parent.tf.float32, shape=[None,keysize])
@@ -276,6 +276,8 @@ class VGGFaceMEBWithL2(parent.VGGFace):
         with parent.tf.device(self.gpu):
             y_target = self.target_code
             y_output = self.get_output()
+
+            #print 'y_output var', y_output.name
         
             if loss == 'logloss':
                 #cross_entropy
@@ -293,12 +295,17 @@ class VGGFaceMEBWithL2(parent.VGGFace):
                     print '***** Warning: The VGG weights are random, but only the last layer is being trained! *****' 
                 vars_to_train = filter(lambda v: v.name.startswith('linear_3'), parent.tf.trainable_variables()) 
                 train_step = parent.tf.train.GradientDescentOptimizer(learning_rate).minimize(loss_op, var_list=vars_to_train)
+            
 
             # vars at 0 holds the input placeholder in a tuple
             # the second entry in the tuple is the actual placeholder
             _, loss = self.sess.run([train_step, loss_op],
                                  feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})
-        
+       
+            #print map(lambda x: x.name, parent.tf.all_variables())
+#            print 'l2 activations', l2_var.eval(feed_dict={self.vars[0][1]: inputs_arr, self.target_code: targets_arr})[:15]
+    
+
             return loss
 
     def get_raw_output_for(self, img):

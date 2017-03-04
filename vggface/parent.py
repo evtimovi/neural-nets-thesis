@@ -76,12 +76,12 @@ class VGGFace(object):
         self.layers.append(('pool',2,2,2,2))
         # (32): nn.View
         # (33): nn.Linear(25088 -> 4096)
-        self.layers.append(('linear','33',4096,'relu'))
+        self.layers.append(('linear','33',4096,'relu', False))
         # (34): nn.ReLU
         # (35): nn.Dropout(0.500000)
         # (36): nn.Linear(4096 -> 4096)
         # (37): nn.ReLU
-        self.layers.append(('linear','36',4096,'relu'))
+        self.layers.append(('linear','36',4096,'relu', False))
         # (38): nn.Dropout(0.500000)
         # (39): nn.Linear(4096 -> 2622)
         # self.layers.append(('linear','39',2622,False))
@@ -122,8 +122,10 @@ class VGGFace(object):
             elif layer[0] == 'linear':
                 num_out = layer[2]
                 func = layer[3]
+                normalize = layer[4]
                 with tf.variable_scope(name) as scope:
                     input = self.get_output()
+                    
                     input_shape = input.get_shape()
                     if input_shape.ndims==4:
                         dim = 1
@@ -140,6 +142,10 @@ class VGGFace(object):
                     elif func == 'sigmoid':
                         op = tf.sigmoid
                     fc = op(tf.nn.bias_add(tf.matmul(feed_in, weights), biases), name=scope.name)
+
+                    if normalize:
+                        fx = tf.div(fc,tf.sqrt(tf.reduce_sum(tf.square(fc))))
+                        fc = fx
                     self.add_(name, fc,layer)
             elif layer[0] == 'softmax':
                 self.add_(name, tf.nn.softmax(self.get_output()),layer)
