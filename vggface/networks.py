@@ -237,8 +237,11 @@ class VGGFaceMEBWithL2(parent.VGGFace):
         self.gpu = gpu
         with parent.tf.device(self.gpu):
             super(VGGFaceMEBWithL2, self).__init__(batch_size)
-            #self.layers.append(('l2','37'))
 
+            #turn on normalization for the last VGG layer
+            self.layers[-1] = (self.layers[-1][0], self.layers[-1][1], self.layers[-1][2], self.layers[-1][3], True)
+            print self.layers[-1]
+ 
             # (layer_type, layer_number, num_neurons, activation_function)
             self.layers.append(('linear', '41', keysize, 'sigmoid', False))
 
