@@ -1,6 +1,6 @@
-from util import processimgs as p
+from util import processimgs as pimg
 from scipy.spatial import distance
-from vggface import networks as n
+from vggface import plainvgg as p
 import os
 import random
 import sys
@@ -22,7 +22,7 @@ path_base = "./datasets/feret-meb-vars/"
 
 total_data = [] # map from subject to tuple (subjectid, fbdist, rcdist, imposterid, fbdist_imposter, rcdist_imposter)
 
-network=n.VGGFaceVanilla()
+network=p.VGGFaceWithL2("/gpu:3")
 network.load_weights("./output/rc_subjects/weights/weights_epoch_11_final.ckpt")
 
 def calculate_fb_rc_for_subject(fa_id, fb_id, rc_id):
@@ -42,9 +42,9 @@ def calculate_fb_rc_for_subject(fa_id, fb_id, rc_id):
         rc_img_path = os.path.join(rc_path, rc_img)
 
         # get the vectors for the genuine images from the network
-        favec = network.get_l2_vector([p.load_adjust_avg(fa_img_path),])
-        fbvec = network.get_l2_vector([p.load_adjust_avg(fb_img_path),])
-        rcvec = network.get_l2_vector([p.load_adjust_avg(rc_img_path),])
+        favec = network.forwardprop([pimg.load_adjust_avg(fa_img_path),])
+        fbvec = network.forwardprop([pimg.load_adjust_avg(fb_img_path),])
+        rcvec = network.forwardprop([pimg.load_adjust_avg(rc_img_path),])
         
         # compute the distances between the fa and the genuine fb's and rc's
         distance_fb = distance.euclidean(favec, fbvec)
@@ -60,7 +60,7 @@ for i in range(len(subjects)):
     distance_imposter_fb, distance_imposter_rc = calculate_fb_rc_for_subject(s, imposter, imposter)
     total_data.append((s, distance_fb, distance_rc, imposter, distance_imposter_fb, distance_imposter_rc))
 
-with open('howfar_data.csv', 'w') as f:
+with open('howfar_data_with_l2.csv', 'w') as f:
     f.write('subject_id,dist_fa_to_genuine_fb,dist_fa_to_genuine_rc,imposter_id,dist_fa_to_imposter_fb,dist_fa_to_imposter_rc\n')
     for row in total_data:
         f.write(','.join(map(str,row))+'\n')

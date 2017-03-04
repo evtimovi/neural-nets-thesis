@@ -16,7 +16,7 @@ def index_match(arr1, arr2):
 path_base = "./datasets/feret-meb-vars/"
 sample_n = 99
 subjects=['00070','00140','00468','00682','00636']
-imposters={'00070': '00071', '00140': '00145', '00468': '00378', '00682': '00098',  '00636': '00345'}
+imposters={'00070': '00071', '00140': '00146', '00468': '00960', '00682': '00093',  '00636': '00591'}
 
 total_data = [] # map from subject to tuple (subjectid, fbdist, rcdist, imposterid, fbdist_imposter, rcdist_imposter)
 
