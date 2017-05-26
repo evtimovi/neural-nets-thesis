@@ -1,0 +1,168 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      4795,        160]
+NotebookOptionsPosition[      3917,        131]
+NotebookOutlinePosition[      4270,        147]
+CellTagsIndexPosition[      4227,        144]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+  "pathBase", "=", 
+   "\"\</Users/ivanevtimov/GDrive-Laf/THESIS/Results with more \
+subjects/\>\""}], ";"}]], "Input",
+ CellChangeTimes->{{3.695848948744624*^9, 
+  3.695848975937291*^9}},ExpressionUUID->"2019ab70-1f1d-4628-b021-\
+e52c54edfb25"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+   "producePairsFromExportedData", "[", "exportedAnalyzedData_", "]"}], ":=", 
+   
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"exportedAnalyzedData", "[", 
+        RowBox[{"[", 
+         RowBox[{"i", ",", "1"}], "]"}], "]"}], ",", 
+       RowBox[{"exportedAnalyzedData", "[", 
+        RowBox[{"[", 
+         RowBox[{"i", ",", "3"}], "]"}], "]"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "1", ",", 
+       RowBox[{"Length", "[", "exportedAnalyzedData", "]"}]}], "}"}]}], 
+    "]"}]}], ";", 
+  RowBox[{"pairsRCList1", "=", 
+   RowBox[{"producePairsFromExportedData", "[", 
+    RowBox[{"Import", "[", 
+     RowBox[{
+     "\"\<data_imposter_and_genuine_tuples_for_quantized_vgg_for_rc_subjects.\
+csv\>\"", ",", 
+      RowBox[{"Path", "\[Rule]", "pathBase"}], ",", 
+      RowBox[{"HeaderLines", "\[Rule]", "0"}]}], "]"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"pairsRCList2", "=", 
+   RowBox[{"producePairsFromExportedData", "[", 
+    RowBox[{"Import", "[", 
+     RowBox[{
+     "\"\<data_imposter_and_genuine_tuples_for_quantized_vgg_for_rc_subjects_\
+2.csv\>\"", ",", 
+      RowBox[{"Path", "\[Rule]", "pathBase"}], ",", 
+      RowBox[{"HeaderLines", "\[Rule]", "0"}]}], "]"}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"pairsFBList1", "=", 
+   RowBox[{"producePairsFromExportedData", "[", 
+    RowBox[{"Import", "[", 
+     RowBox[{
+     "\"\<data_imposter_and_genuine_tuples_for_quantized_vgg_for_fb_subjects.\
+csv\>\"", ",", 
+      RowBox[{"Path", "\[Rule]", "pathBase"}], ",", 
+      RowBox[{"HeaderLines", "\[Rule]", "0"}]}], "]"}], "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.69964475484874*^9, 3.699644774507543*^9}, {
+  3.699644831522023*^9, 
+  3.699644905199006*^9}},ExpressionUUID->"f4074a64-34d7-4236-820a-\
+96b304734f2b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Select", "[", 
+  RowBox[{"pairsRCList1", ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"#", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "\[Equal]", 
+     RowBox[{"#", "[", 
+      RowBox[{"[", "2", "]"}], "]"}]}], "&"}]}], "]"}]], "Input",ExpressionUUI\
+D->"f09db2cf-1158-436c-80fc-d6e809452f73"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"562", ",", "562"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"637", ",", "637"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.699644906811988*^9},ExpressionUUID->"c6f90b1e-26f0-478b-9bcd-\
+4924e0b0b48e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Select", "[", 
+  RowBox[{"pairsRCList2", ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"#", "[", 
+      RowBox[{"[", "1", "]"}], "]"}], "\[Equal]", 
+     RowBox[{"#", "[", 
+      RowBox[{"[", "2", "]"}], "]"}]}], "&"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.6996449140055933`*^9, 
+  3.699644914077417*^9}},ExpressionUUID->"4f3c9860-b393-4f51-bbf3-\
+ad621da68c4e"],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{
+  3.699644914453731*^9},ExpressionUUID->"b2095112-7e01-4743-88bf-\
+2bb4e339f088"]
+}, Open  ]]
+},
+WindowSize->{808, 655},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"11.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (March 16, \
+2017)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 280, 8, 32, "Input", "ExpressionUUID" -> \
+"2019ab70-1f1d-4628-b021-e52c54edfb25"],
+Cell[841, 30, 1859, 52, 264, "Input", "ExpressionUUID" -> \
+"f4074a64-34d7-4236-820a-96b304734f2b"],
+Cell[CellGroupData[{
+Cell[2725, 86, 317, 9, 32, "Input", "ExpressionUUID" -> \
+"f09db2cf-1158-436c-80fc-d6e809452f73"],
+Cell[3045, 97, 281, 9, 32, "Output", "ExpressionUUID" -> \
+"c6f90b1e-26f0-478b-9bcd-4924e0b0b48e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3363, 111, 388, 11, 32, "Input", "ExpressionUUID" -> \
+"4f3c9860-b393-4f51-bbf3-ad621da68c4e"],
+Cell[3754, 124, 147, 4, 66, "Output", "ExpressionUUID" -> \
+"b2095112-7e01-4743-88bf-2bb4e339f088"]
+}, Open  ]]
+}
+]
+*)
+

@@ -111,3 +111,5 @@ training_mebs_two_subjects/*
 
 errors.txt
 errors_*
+
+.DS_Store
